@@ -51,7 +51,7 @@
 		<height></height>
 		<default></default>
 		<events>
-			<init>
+			<init></init>
 		</events>
 		<layout>
 			<type>vstack|hstack</type>
