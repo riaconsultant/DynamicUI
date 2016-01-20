@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<app>
+	<app_detail>
+		<id>unique id</id>
+		<stxt>short desc</stxt>
+		<lgtxt>Long desc</lgtxt>
+		<title>Application Title</title>
+		<desc>Application details</desc>
+		<version>v1.0</version>
+		<client>Customer name</client>
+		<mobile>True</mobile>
+		<favIcon>Path</favIcon>
+		<homeIcon>Path</homeIcon>
+	</app_detail>
+	<navigation>
+		<align>Left|Right</align>
+		<search>True</search>
+		<className></className>
+		<menu>
+			<label></label>
+			<link></link>
+			<click></click>
+			<hover></hover>
+			<className></className>
+			<screenRef></screenRef>
+			<target>blank|parent</target>
+			<toolTip></toolTip>
+			<icon></icon>
+			<iconAlign></iconAlign>
+			<menu>
+				<label></label>
+				<link></link>
+				<click></click>
+				<hover></hover>
+				<className></className>
+				<screenRef></screenRef>
+				<target>blank|parent</target>
+				<toolTip></toolTip>
+				<icon></icon>
+				<iconAlign></iconAlign>
+			</menu>
+		</menu>
+		
+	</navigation>
+	<screen>
+		<id></id>
+		<type>Normal|Popup</type>
+		<title>Screen</title>
+		<navUrl></navUrl>
+		<width></width>
+		<height></height>
+		<default></default>
+		<events>
+			<init></init>
+		</events>
+		<layout>
+			<controls>
+				<control>
+					<type>Form/Table</type>
+					<id/>
+					<model/>
+					<className></className>
+					<elements>
+						<element>
+							<type>input/text/select/dateTime</type>
+							<label/>
+							<placeholder></placeholder>
+							<tooltip></tooltip>
+							<bindingName />
+							<model></model>
+							<labelAlignment/>
+							<mandatory/>
+							<maxlength/>
+							<width/>
+							<visible/>
+							<enable/>
+							<defaultValue/>
+							<valueType>Password/email/text/number</valueType>
+							<className></className>
+							<formatter/>
+							<itemBinding>
+								<itemLabel></itemLabel>
+								<itemKey/>
+								<bindingPath/>
+								<model></model>
+							</itemBinding>
+							<events>
+								<event>
+									<type>onclick/onchange</type>
+									<businessMethod/>
+									<serviceUrl/>
+									<screenRef></screenRef>
+									<dataObject/>
+									<refElement />
+									<refDataPath/>
+								</event>
+							</events>
+						</element>
+					</elements>
+					<actions>
+						<action>
+							<type>button/link</type>
+							<label></label>
+							<tooltip/>
+							<serviceUrl/>
+							<serviceMethod>get/post/put</serviceMethod>
+							<screenRef></screenRef>
+							<targetControl>
+								<targetDataPath/>
+								<targetDataBind/>
+								<model/>
+							</targetControl>
+						</action>
+					</actions>
+				</control>
+			</controls>
+		</layout>
+	</screen>
+</app>
