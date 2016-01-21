@@ -1,0 +1,177 @@
+{
+  "app": {
+    "app_detail": {
+      "id": "unique id",
+      "stxt": "short desc",
+      "lgtxt": "Long desc",
+      "title": "Application Title",
+      "desc": "Application details",
+      "version": "v1.0",
+      "client": "Customer name",
+      "mobile": "True",
+      "favIcon": "Path",
+      "homeIcon": "Path"
+    },
+    "navigation": {
+      "align": "Left|Right",
+      "search": "True",
+      "className": "classname",
+      "menu": {
+        "label": "lab",
+        "link": "link",
+        "click": "click",
+        "hover": "hover",
+        "className": "className",
+        "screenRef": "sre",
+        "target": "blank|parent",
+        "toolTip": "tt",
+        "icon": "icon",
+        "iconAlign": "left",
+        "menu": {
+          "label": "lab",
+          "link": "link",
+          "click": "onclick",
+          "hover": "hv",
+          "className": "className",
+          "screenRef": "sRef",
+          "target": "blank|parent",
+          "toolTip": "tt",
+          "icon": "icon",
+          "iconAlign": "left"
+        }
+      }
+    },
+    "screen": {
+      "id": "sId",
+      "type": "Normal|Popup",
+      "title": "Screen",
+      "navUrl": "navUrl",
+      "width": "50%",
+      "height": "ht",
+      "default": "def",
+      "events": { "init": "init" },
+      "layout": {
+        "controls": {
+          "control": [
+            {
+              "type": "Form",
+              "id": "cId",
+              "model": "model",
+              "className": "cName",
+              "elements": {
+                "element": [{
+                  "type": "input/text/select/dateTime",
+                  "label": "lab",
+                  "placeholder": "pHolder",
+                  "tooltip": "tt",
+                  "bindingName": "bName",
+                  "model": "model",
+                  "labelAlignment": "labAl",
+                  "mandatory": "true",
+                  "maxlength": "mlength",
+                  "width": "50%",
+                  "visible": "true",
+                  "enable": "true",
+                  "defaultValue": "def value",
+                  "valueType": "Password/email/text/number",
+                  "className": "cNAme",
+                  "formatter": "formtr",
+                  "itemBinding": {
+                    "itemLabel": "iLabel",
+                    "itemKey": "iKey",
+                    "bindingPath": "bPath",
+                    "model": "model"
+                  },
+                  "events": {
+                    "event": {
+                      "type": "onclick/onchange",
+                      "businessMethod": "business method",
+                      "serviceUrl": "url",
+                      "screenRef": "sRef",
+                      "dataObject": "dObj",
+                      "refElement": "rElem",
+                      "refDataPath": "rData"
+                    }
+                  }
+                }]
+              },
+              "actions": {
+                "action": {
+                  "type": "button/link",
+                  "label": "label",
+                  "tooltip": "tt",
+                  "serviceUrl": "url",
+                  "serviceMethod": "get/post/put",
+                  "screenRef": "sRef",
+                  "targetControl": {
+                    "targetDataPath": "tDpath",
+                    "targetDataBind": "tDataBind",
+                    "model": "model"
+                  }
+                }
+              }
+            },
+            {
+              "type": "Form/Table",
+              "id": "cId",
+              "model": "model",
+              "className": "cName",
+              "elements": {
+                "element": {
+                  "type": "input",
+                  "label": "lab",
+                  "placeholder": "pHolder",
+                  "tooltip": "tt",
+                  "bindingName": "bName",
+                  "model": "model",
+                  "labelAlignment": "labAl",
+                  "mandatory": "true",
+                  "maxlength": "mlength",
+                  "width": "50%",
+                  "visible": "true",
+                  "enable": "true",
+                  "defaultValue": "def value",
+                  "valueType": "Password/email/text/number",
+                  "className": "cNAme",
+                  "formatter": "formtr",
+                  "itemBinding": {
+                    "itemLabel": "iLabel",
+                    "itemKey": "iKey",
+                    "bindingPath": "bPath",
+                    "model": "model"
+                  },
+                  "events": {
+                    "event": {
+                      "type": "onclick/onchange",
+                      "businessMethod": "business method",
+                      "serviceUrl": "url",
+                      "screenRef": "sRef",
+                      "dataObject": "dObj",
+                      "refElement": "rElem",
+                      "refDataPath": "rData"
+                    }
+                  }
+                }
+              },
+              "actions": {
+                "action": {
+                  "type": "button/link",
+                  "label": "label",
+                  "tooltip": "tt",
+                  "serviceUrl": "url",
+                  "serviceMethod": "get/post/put",
+                  "screenRef": "sRef",
+                  "targetControl": {
+                    "targetDataPath": "tDpath",
+                    "targetDataBind": "tDataBind",
+                    "model": "model"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}
