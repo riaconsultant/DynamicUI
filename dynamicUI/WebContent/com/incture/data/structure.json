@@ -58,26 +58,26 @@
                         "controls": [
                             {
                                
-                                    "type": "Form/Table",
-                                    "id": "",
+                                    "type": "Form",
+                                    "id": "idForm",
                                     "model": "",
                                     "className": "",
                                     "elements": [{
                                         
-                                            "type": "input/text/select/dateTime",
-                                            "label": "",
-                                            "placeholder": "",
-                                            "tooltip": "",
-                                            "bindingName": "",
+                                            "type": "input",
+                                            "label": "Name",
+                                            "placeholder": "Your Name",
+                                            "tooltip": "Your Name",
+                                            "bindingName": "/name",
                                             "model": "",
                                             "labelAlignment": "",
                                             "mandatory": "",
-                                            "maxlength": "",
+                                            "maxlength": "5",
                                             "width": "",
-                                            "visible": "",
-                                            "enable": "",
+                                            "visible": "true",
+                                            "enable": "true",
                                             "defaultValue": "",
-                                            "valueType": "Password/email/text/number",
+                                            "valueType": "",
                                             "className": "",
                                             "formatter": "",
                                             "itemBinding": {

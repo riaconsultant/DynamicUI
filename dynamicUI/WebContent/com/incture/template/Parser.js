@@ -10,6 +10,10 @@ jQuery.sap.declare("com.incture.template.Parser");
 com.incture.template.Parser = {
 
 	init : function(jsonPath) {
+		var app = new sap.m.App({
+			initialPage : "initalPage"
+		});
+		
 		var oModel = new sap.ui.model.json.JSONModel();
 		//create json model
 		if (jsonPath) {
@@ -17,7 +21,6 @@ com.incture.template.Parser = {
 		}
 		//create screens and layouts from the data
 		var content = this.getContentFromJson(oModel.getData());
-
 		var page = new sap.m.Page({
 			id : "initalPage",
 			title : "Template Test",
@@ -28,9 +31,7 @@ com.incture.template.Parser = {
 		page.setModel(oModel, "defaultModel");
 
 		// create an app that contains the initial page
-		var app = new sap.m.App({
-			initialPage : "initalPage"
-		});
+		
 		app.addPage(page);
 
 		return app;
@@ -39,76 +40,25 @@ com.incture.template.Parser = {
 	/**Function to generate the screens , layouts and all the controls based on input json data **/
 	getContentFromJson : function(jsonData) {
 		var content = [];
+		this.data=[];
+		var that = this;
+		$.ajax({
+			  url: 'com/incture/data/structure.json',
+			  dataType: 'json',
+			  async: false,
+			  data: "",
+			  success: function(data) {
+			    that.data=data;
+			  },
+			});
 
-		var data = {
-			screens : [ {
-				controls : [ {
-
-					"type" : "Form",
-					"id" : "idForm",
-					"model" : "",
-					"className" : "",
-					"elements" : [ {
-						"type" : "input",
-						"label" : "Name",
-						"placeholder" : "your name",
-						"tooltip" : "your name",
-						"bindingName" : "/name",
-						"model" : "",
-						"labelAlignment" : "left",
-						"mandatory" : "true",
-						"maxlength" : "5",
-						"width" : "",
-						"visible" : "true",
-						"enable" : "true",
-						"defaultValue" : "",
-						"valueType" : "",
-						"className" : "",
-						"formatter" : "",
-						"itemBinding" : {
-							"itemLabel" : "",
-							"itemKey" : "",
-							"bindingPath" : "",
-							"model" : ""
-						},
-						"events" : [ {
-
-							"type" : "onclick/onchange",
-							"businessMethod" : "",
-							"serviceUrl" : "",
-							"screenRef" : "",
-							"dataObject" : "",
-							"refElement" : "",
-							"refDataPath" : ""
-
-						} ]
-
-					} ],
-					"actions" : [ {
-
-						"type" : "button/link",
-						"label" : "",
-						"tooltip" : "",
-						"serviceUrl" : "",
-						"serviceMethod" : "get/post/put",
-						"screenRef" : "",
-						"targetControl" : {
-							"targetDataPath" : "",
-							"targetDataBind" : "",
-							"model" : ""
-						}
-
-					} ]
-
-				} ]
-			} ]
-
-		};
-		var aScreens = jsonData.screens;
-		aScreens = data.screens;
+		var aScreens = this.data.app.screen;
+		if(!aScreens){
+			aScreens=[];
+		}
 		for (var incScreen = 0; incScreen < aScreens.length; incScreen++) {
 			var screenElement = aScreens[incScreen];
-			var aControlsForScreen = screenElement.controls;
+			var aControlsForScreen = screenElement.layouts[0].controls;
 			for (var controlInc = 0; controlInc < aControlsForScreen.length; controlInc++) {
 				var control = aControlsForScreen[controlInc];
 				var oControl = this.fnParseControl(control);
