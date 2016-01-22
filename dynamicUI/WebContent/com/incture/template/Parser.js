@@ -10,17 +10,35 @@ jQuery.sap.declare("com.incture.template.Parser");
 com.incture.template.Parser = {
 
 	init : function(jsonPath) {
-		var app = new sap.m.App({
-			initialPage : "initalPage"
-		});
 		
 		var oModel = new sap.ui.model.json.JSONModel();
 		//create json model
 		if (jsonPath) {
-			oModel = new sap.ui.model.json.JSONModel(jsonPath);
+			var data = this.fnGetJson(jsonPath, null, false);
+			oModel = new sap.ui.model.json.JSONModel(data);
 		}
+		
+		var app = new sap.m.App({
+			id:oModel.getProperty('/app/app_detail/id'),
+			initialPage : "initalPage"
+		});
+		
+		/** One model to hold our global values - */
+		var applicationModel = new sap.ui.model.json.JSONModel({
+			modelNames:[],
+			applicationId:app.getId()
+		});
+		sap.ui.getCore().setModel(applicationModel,"applicationModel");
+		
 		//create screens and layouts from the data
 		var content = this.getContentFromJson(oModel.getData());
+		
+		/**
+		 * function to create models 
+		 */
+		
+		this.fnCreateModels();
+		
 		var page = new sap.m.Page({
 			id : "initalPage",
 			title : "Template Test",
@@ -52,7 +70,8 @@ com.incture.template.Parser = {
 			  },
 			});
 
-		var aScreens = this.data.app.screen;
+//		var aScreens = this.data.app.screen;
+		var aScreens = jsonData.app.screens;
 		if(!aScreens){
 			aScreens=[];
 		}
@@ -87,11 +106,71 @@ com.incture.template.Parser = {
 			break;
 		case "form":
 		case "Form":
-			oReturnControl = this.fnCreateSimpleForm(controlData);
+			oReturnControl = this.fnCreateGrid(controlData);
+			break;
+		case "select":
+		case "Select":
+			oReturnControl = this.fnCreateSelect(controlData);
 		default:
 			break;
 		}
+
+		sap.ui.getCore().getModel('applicationModel').getProperty("/modelNames").push(controlData.model);
 		return oReturnControl;
+	},
+	fnCreateGrid : function(controlData){
+		
+		var oFormElements = controlData.elements;
+		var aFormContents = [];
+		for (var elementInc = 0; elementInc < oFormElements.length; elementInc++) {
+			var element = oFormElements[elementInc];
+			var oLabelForControl = this.fnCreateLabel(element,"Center"); //2nd parameter is for begin/Center/Right Alignment
+			var oControl = this.fnParseControl(element);
+			switch(element.labelAlignment){
+				case "left":
+				case "Left": 
+						aFormContents.push(oLabelForControl);
+						aFormContents.push(oControl);
+					break;
+				case "right":
+				case "Right": 
+						aFormContents.push(oControl);
+						aFormContents.push(oLabelForControl);
+					break;	
+				
+				case "top":
+				case "Top": var oVBox = this.fnCreateVBox();
+								oVBox.addItems(oLabelForControl);
+								oVBox.addItem(oControl);
+								aFormContents.push(oVBox);
+								break;
+				case "below":
+				case "Below": var oVBox = this.fnCreateVBox();
+								oVBox.addItem(oControl);
+								oVBox.addItems(oLabelForControl);
+								aFormContents.push(oVBox);
+							break;
+			}
+			
+
+		}
+
+		
+		var oGrid = new sap.ui.layout.Grid({
+			visible : true, // boolean
+			width : "100%", // sap.ui.core.CSSSize
+			vSpacing : 1, // float
+			hSpacing : 2, // float
+			position : sap.ui.layout.GridPosition.Left, // sap.ui.layout.GridPosition
+			defaultSpan : "XL2 L2 M6 S12", // sap.ui.layout.GridSpan
+			defaultIndent : "XL0 L0 M0 S0", // sap.ui.layout.GridIndent
+			containerQuery : false, // boolean
+			tooltip : undefined, // sap.ui.core.TooltipBase
+			content : aFormContents
+		// sap.ui.core.Control
+		});
+		
+		return oGrid;
 	},
 	/**Function to generate form control **/
 	fnCreateSimpleForm : function(controlData) {
@@ -145,11 +224,9 @@ com.incture.template.Parser = {
 	},
 	
 	fnCreateInput : function(controlData) {
-
-		//TODO - switch case for property - value Type. ( Password/Number etc)
 		var oInput = new sap.m.Input({
 			visible : Boolean(controlData.visible), // boolean
-			value : "{" + controlData.bindingName + "}", // string
+			value : "{" + controlData.model + ">"+controlData.bindingName + "}", // string
 			width : controlData.width, // sap.ui.core.CSSSize
 			enabled :Boolean( controlData.enable), // boolean
 			placeholder : controlData.placeholder, // string
@@ -186,16 +263,17 @@ com.incture.template.Parser = {
 		});
 
 		return oInput;
-
 	},
-	fnCreateLabel : function(controlData) {
+	fnCreateLabel : function(controlData,alignment) {
 
+		if(alignment === undefined)
+			alignment = "Begin";
 		var oLabel = new sap.m.Label({
 			styleClass:controlData.className,
 			visible : Boolean(controlData.visible), // boolean
 			design : sap.m.LabelDesign.Standard, // sap.m.LabelDesign
 			text : controlData.label, // string
-			textAlign : sap.ui.core.TextAlign.Begin, // sap.ui.core.TextAlign
+			textAlign : alignment, // sap.ui.core.TextAlign
 			width : "", // sap.ui.core.CSSSize
 			required : Boolean(controlData.mandatory), // boolean
 			tooltip : controlData.tooltip, // sap.ui.core.TooltipBase
@@ -395,6 +473,103 @@ com.incture.template.Parser = {
 
 		return toolBar;
 	},
+fnCreateSelect : function(controlData){
+		
+		var oSelect = new sap.m.Select({
+			visible : Boolean(controlData.visible), // boolean
+			enabled : Boolean(controlData.enable), // boolean
+			width : "100%", // sap.ui.core.CSSSize
+			maxWidth : "100%", // sap.ui.core.CSSSize
+			selectedKey : "{"+controlData.model+">"+controlData.bindingName+"}", // string, since 1.11
+			selectedItemId : "", // string, since 1.12
+			icon : controlData.icon, // sap.ui.core.URI, since 1.16
+			type : sap.m.SelectType.Default, // sap.m.SelectType, since 1.16
+			autoAdjustWidth : false, // boolean, since 1.16
+			tooltip : controlData.tooltip, // sap.ui.core.TooltipBase
+			items : {
+				path:controlData.itemBinding.model+">"+controlData.itemBinding.bindingPath,
+				template: new sap.ui.core.Item({
+					text : "{"+controlData.itemBinding.model+">"+controlData.itemBinding.itemLabel+"}", // string
+					enabled : true, // boolean
+					textDirection : sap.ui.core.TextDirection.Inherit, // sap.ui.core.TextDirection
+					key : "{"+controlData.itemBinding.model+">"+controlData.itemBinding.itemKey+"}", // string
+					tooltip : undefined, // sap.ui.core.TooltipBase
+				}) 
+			}, // sap.ui.core.Item
+			selectedItem : undefined, // sap.ui.core.Item
+			change : [ function(oEvent) {
+				var control = oEvent.getSource();
+			}, this ]
+		});
+		
+		/**
+		 * Need to create a model and fetch data from service URL and set it to entire app
+		 */
+			this.fnCreateModelAndFetchData(controlData,controlData.itemBinding.model);
+			return oSelect;
+	},
+	fnCreateDateTimeInput:function(controlData){
+		
+		var oDateTime = new sap.m.DateTimeInput({
+			visible : Boolean(controlData.visible), // boolean
+			value : "{"+controlData.model+">"+controlData.bindingName+"}", // string
+			width : controlData.width, // sap.ui.core.CSSSize
+			enabled : Boolean(controlData.enable), // boolean
+			placeholder : controlData.placeholder, // string
+			editable : true, // boolean, since 1.12.0
+			type : sap.m.DateTimeInputType.Date, // sap.m.DateTimeInputType
+			displayFormat : undefined, // string
+			valueFormat : undefined, // string
+			dateValue : undefined, // object
+			tooltip : controlData.tooltip, // sap.ui.core.TooltipBase
+			change : [ function(oEvent) {
+				var control = oEvent.getSource();
+			}, this ],
+			change : [ function(oEvent) {
+				var control = oEvent.getSource();
+			}, this ]
+		})
+	},
+	fnCreateVBox:function(controlData){
+		
+		var oVBox =  new sap.m.VBox({
+			height : "", // sap.ui.core.CSSSize, since 1.9.1
+			width : "", // sap.ui.core.CSSSize, since 1.9.1
+			displayInline : false, // boolean
+			direction : sap.m.FlexDirection.Row, // sap.m.FlexDirection
+			fitContainer : false, // boolean
+			renderType : sap.m.FlexRendertype.Div, // sap.m.FlexRendertype
+			justifyContent : sap.m.FlexJustifyContent.Start, // sap.m.FlexJustifyContent
+			alignItems : sap.m.FlexAlignItems.Stretch, // sap.m.FlexAlignItems
+			tooltip : undefined, // sap.ui.core.TooltipBase
+			items : []
+		// sap.ui.core.Control
+		})
+	},
+	fnCreateModels:function(){
+		
+		var aModels = sap.ui.getCore().getModel('applicationModel').getProperty('/modelNames');
+		
+		aModels = jQuery.unique(aModels);
+		
+		var applicationId = sap.ui.getCore().getModel('applicationModel').getProperty('/applicationId')
+		for (var modelInc = 0; modelInc < aModels.length; modelInc++) {
+			var model_element = aModels[modelInc];
+			var oModel = new sap.ui.model.json.JSONModel();
+			sap.ui.getCore().byId(applicationId).setModel(oModel,model_element);
+		}
+	},
+	fnCreateModelAndFetchData:function(controlData,modelName){
+		
+		var serviceUrl = controlData.serviceUrl;
+		var fetchData = this.fnGetJson(serviceUrl,null,false);
+		var applicationId = sap.ui.getCore().getModel('applicationModel').getProperty('/applicationId');
+		if(modelName === undefined){
+			modelName = controlData.model;
+		}
+		var oModel = new sap.ui.model.json.JSONModel(fetchData);
+		sap.ui.getCore().byId(applicationId).setModel(oModel,modelName);
+	},
 /** Function methods for parsing actions **/
 	fnCreateButton : function(actionData){
 		var oButton = new sap.m.Button({
@@ -442,5 +617,25 @@ com.incture.template.Parser = {
 		}
 		return oActionControl;
 	},
+	/**
+	 * JQuery Ajax methods
+	 */
+	fnGetJson:function(serviceUrl,data,async){
+		var returnData = {};
+		$.ajax({
+			  dataType: "json",
+			  url: serviceUrl,
+			  async: async,
+			  data: data,
+			  success: function(data){
+				  returnData =  data;
+			  },
+			  error:function(error){
+				  console.log(error);
+				  returnData= {};
+			  }
+			});
+		return returnData;
+	}
 	/** **/
 }

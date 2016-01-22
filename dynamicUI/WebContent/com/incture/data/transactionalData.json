@@ -1,0 +1,261 @@
+{
+    "app": {
+        "app_detail": {
+            "id": "myApp",
+            "stxt": "short desc",
+            "lgtxt": "Long desc",
+            "title": "Application Title",
+            "desc": "Application details",
+            "version": "v1.0",
+            "client": "Customer name",
+            "mobile": "True",
+            "favIcon": "Path",
+            "homeIcon": "Path"
+        },
+        "navigation": {
+            "align": "Left|Right",
+            "search": "True",
+            "className": "",
+            "menu": {
+                "label": "",
+                "link": "",
+                "click": "",
+                "hover": "",
+                "className": "",
+                "screenRef": "",
+                "target": "blank|parent",
+                "toolTip": "",
+                "icon": "",
+                "iconAlign": "",
+                "menu": {
+                    "label": "",
+                    "link": "",
+                    "click": "",
+                    "hover": "",
+                    "className": "",
+                    "screenRef": "",
+                    "target": "blank|parent",
+                    "toolTip": "",
+                    "icon": "",
+                    "iconAlign": ""
+                }
+            }
+        },
+        
+			"screens" : [ {
+				"layouts":[{
+				"controls" : [ {
+
+					"type" : "Form",
+					"id" : "idForm",
+					"model" : "idForm",
+					"className" : "",
+					"elements" : [ {
+						"type" : "input",
+						"label" : "Name",
+						"placeholder" : "your name",
+						"tooltip" : "your name",
+						"bindingName" : "/name",
+						"model" : "idForm",
+						"labelAlignment" : "left",
+						"mandatory" : "true",
+						"maxlength" : "5",
+						"width" : "",
+						"visible" : "true",
+						"enable" : "true",
+						"defaultValue" : "",
+						"valueType" : "",
+						"className" : "",
+						"formatter" : "",
+						"itemBinding" : {
+							"itemLabel" : "",
+							"itemKey" : "",
+							"bindingPath" : "",
+							"model" : ""
+						},
+						"events" : [ {
+
+							"type" : "onclick/onchange",
+							"businessMethod" : "",
+							"serviceUrl" : "",
+							"screenRef" : "",
+							"dataObject" : "",
+							"refElement" : "",
+							"refDataPath" : ""
+
+						} ]
+
+					},
+					 {
+						"type" : "input",
+						"label" : "Age",
+						"placeholder" : "your age",
+						"tooltip" : "your age",
+						"bindingName" : "/age",
+						"model" : "idForm",
+						"labelAlignment" : "left",
+						"mandatory" : "true",
+						"maxlength" : "5",
+						"width" : "",
+						"visible" : "true",
+						"enable" : "true",
+						"defaultValue" : "",
+						"valueType" : "",
+						"className" : "",
+						"formatter" : "",
+						"itemBinding" : {
+							"itemLabel" : "",
+							"itemKey" : "",
+							"bindingPath" : "",
+							"model" : ""
+						},
+						"events" : [ {
+
+							"type" : "onclick/onchange",
+							"businessMethod" : "",
+							"serviceUrl" : "",
+							"screenRef" : "",
+							"dataObject" : "",
+							"refElement" : "",
+							"refDataPath" : ""
+
+						} ]
+
+					} ,
+					 {
+						"type" : "input",
+						"label" : "Company",
+						"placeholder" : "your company",
+						"tooltip" : "your company",
+						"bindingName" : "/company",
+						"model" : "idForm",
+						"labelAlignment" : "left",
+						"mandatory" : "true",
+						"maxlength" : "5",
+						"width" : "",
+						"visible" : "true",
+						"enable" : "true",
+						"defaultValue" : "",
+						"valueType" : "",
+						"className" : "",
+						"formatter" : "",
+						"itemBinding" : {
+							"itemLabel" : "",
+							"itemKey" : "",
+							"bindingPath" : "",
+							"model" : ""
+						},
+						"events" : [ {
+
+							"type" : "onclick/onchange",
+							"businessMethod" : "",
+							"serviceUrl" : "",
+							"screenRef" : "",
+							"dataObject" : "",
+							"refElement" : "",
+							"refDataPath" : ""
+
+						} ]
+
+					},
+					{
+						"type" : "select",
+						"label" : "Office",
+						"placeholder" : "your location",
+						"tooltip" : "your location",
+						"bindingName" : "/location",
+						"model" : "idForm",
+						"labelAlignment" : "left",
+						"mandatory" : "true",
+						"maxlength" : "5",
+						"width" : "",
+						"visible" : "true",
+						"enable" : "true",
+						"defaultValue" : "",
+						"valueType" : "",
+						"className" : "",
+						"formatter" : "",
+						"serviceUrl":"com/incture/data/location.json",
+						"itemBinding" : {
+							"itemLabel" : "desc",
+							"itemKey" : "key",
+							"bindingPath" : "/items",
+							"model" : "locationModel"
+						},
+						"events" : [ {
+
+							"type" : "onclick/onchange",
+							"businessMethod" : "",
+							"serviceUrl" : "",
+							"screenRef" : "",
+							"dataObject" : "",
+							"refElement" : "",
+							"refDataPath" : ""
+
+						}
+						 ]
+
+					} ,
+					
+					{
+						"type" : "select",
+						"label" : "Office",
+						"placeholder" : "your location",
+						"tooltip" : "your location",
+						"bindingName" : "/location",
+						"model" : "idForm",
+						"labelAlignment" : "left",
+						"mandatory" : "true",
+						"maxlength" : "5",
+						"width" : "",
+						"visible" : "true",
+						"enable" : "true",
+						"defaultValue" : "",
+						"valueType" : "",
+						"className" : "",
+						"formatter" : "",
+						"serviceUrl":"com/incture/data/location.json",
+						"itemBinding" : {
+							"itemLabel" : "desc",
+							"itemKey" : "key",
+							"bindingPath" : "/items",
+							"model" : "locationModel"
+						},
+						"events" : [ {
+
+							"type" : "onclick/onchange",
+							"businessMethod" : "",
+							"serviceUrl" : "",
+							"screenRef" : "",
+							"dataObject" : "",
+							"refElement" : "",
+							"refDataPath" : ""
+
+						}
+						 ]
+
+					} ],
+					"actions" : [{
+                                        
+                                            "type": "button",
+                                            "label": "Save",
+                                            "tooltip": "",
+                                            "serviceUrl": "",
+                                            "serviceMethod": "get/post/put",
+                                            "screenRef": "",
+                                            "targetControl": {
+                                                "targetDataPath": "",
+                                                "targetDataBind": "",
+                                                "model": ""
+                                            }
+                                        
+                                    } ]
+
+				} ]
+			} ]
+		} ]
+
+		}
+	}
+
+		
