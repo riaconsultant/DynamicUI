@@ -101,8 +101,8 @@
                                     }],
                                     "actions": [{
                                         
-                                            "type": "button/link",
-                                            "label": "",
+                                            "type": "button",
+                                            "label": "Save",
                                             "tooltip": "",
                                             "serviceUrl": "",
                                             "serviceMethod": "get/post/put",

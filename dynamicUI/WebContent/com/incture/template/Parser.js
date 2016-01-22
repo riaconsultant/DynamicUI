@@ -62,7 +62,11 @@ com.incture.template.Parser = {
 			for (var controlInc = 0; controlInc < aControlsForScreen.length; controlInc++) {
 				var control = aControlsForScreen[controlInc];
 				var oControl = this.fnParseControl(control);
+				var oActionControl = this.fnParseControlForActions(control.actions);
 				content.push(oControl);
+				if(oActionControl){
+					content.push(oActionControl);
+				}
 			}
 		}
 
@@ -73,7 +77,7 @@ com.incture.template.Parser = {
 		return content;
 	},
 	fnParseControl : function(controlData) {
-
+	
 		var controlType = controlData.type;
 		var oReturnControl = null;
 		switch (controlType) {
@@ -139,6 +143,7 @@ com.incture.template.Parser = {
 
 		return form;
 	},
+	
 	fnCreateInput : function(controlData) {
 
 		//TODO - switch case for property - value Type. ( Password/Number etc)
@@ -199,6 +204,7 @@ com.incture.template.Parser = {
 
 		return oLabel;
 	},
+	
 	/**Function to generate table control **/
 	getTable : function() {
 		var template = new sap.m.ColumnListItem({
@@ -328,7 +334,7 @@ com.incture.template.Parser = {
 	},
 
 	/**Function to create and return tool bar **/
-	getToolBar : function() {
+	fnCreateToolBar : function() {
 		var toolBar = new sap.m.Toolbar({
 			visible : true,
 			visible : true,
@@ -389,5 +395,52 @@ com.incture.template.Parser = {
 
 		return toolBar;
 	},
-
+/** Function methods for parsing actions **/
+	fnCreateButton : function(actionData){
+		var oButton = new sap.m.Button({
+			visible : true, // boolean
+			text : actionData.label, // string
+			type : sap.m.ButtonType.Default, // sap.m.ButtonType
+			width : undefined, // sap.ui.core.CSSSize
+			enabled : true, // boolean
+			icon : undefined, // sap.ui.core.URI
+			iconFirst : true, // boolean
+			activeIcon : undefined, // sap.ui.core.URI
+			iconDensityAware : true, // boolean
+			tooltip : actionData.tooltip, // sap.ui.core.TooltipBase
+			ariaDescribedBy : [], // sap.ui.core.Control
+			ariaLabelledBy : [], // sap.ui.core.Control
+			tap : [ function(oEvent) {
+				var control = oEvent.getSource();
+			}, this ],
+			press : [ function(oEvent) {
+				var control = oEvent.getSource();
+			}, this ]
+		});
+		return oButton;
+	},
+	
+	fnParseControlForActions : function(controlActions){
+		var oActionControl = null;
+		for(var actionInc=0; actionInc< controlActions.length; actionInc++){
+			var oAction = controlActions[actionInc];
+			oActionControl = this.fnParseAction(oAction);
+		}
+		return oActionControl;
+	},
+	
+	fnParseAction : function(actionControl){
+		var actionType = actionControl.type;
+		var oActionControl = null;
+		switch(actionType){
+		case "button":
+		case "Button":oActionControl = this.fnCreateButton(actionControl);
+		break;
+		case "link":
+		case "Link":oActionControl = this.fnCreateLink(actionControl);
+		break;
+		}
+		return oActionControl;
+	},
+	/** **/
 }
