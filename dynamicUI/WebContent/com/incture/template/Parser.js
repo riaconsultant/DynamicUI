@@ -98,18 +98,33 @@ com.incture.template.Parser = {
 	fnParseControl : function(controlData) {
 	
 		var controlType = controlData.type;
+		if(controlType!==undefined){
+			controlType = controlType.toLowerCase();
+		}
 		var oReturnControl = null;
 		switch (controlType) {
 		case "input":
-		case "Input":
 			oReturnControl = this.fnCreateInput(controlData);
 			break;
+		case "radiobutton":
+			oReturnControl = this.fnCreateRadioButton(controlData);
+			break;
+		case "checkbox":
+			oReturnControl = this.fnCreateCheckBox(controlData);
+			break;
+		case "datetime":
+			oReturnControl = this.fnCreateCheckBox(controlData);
+			break;
+		case "textarea":
+			oReturnControl = this.fnCreateTextArea(controlData);
+			break;
+		case "text":
+			oReturnControl = this.fnCreateText(controlData);
+			break;
 		case "form":
-		case "Form":
 			oReturnControl = this.fnCreateGrid(controlData);
 			break;
 		case "select":
-		case "Select":
 			oReturnControl = this.fnCreateSelect(controlData);
 		default:
 			break;
@@ -122,11 +137,15 @@ com.incture.template.Parser = {
 		
 		var oFormElements = controlData.elements;
 		var aFormContents = [];
+		var isLabelRequired = true;
+		
 		for (var elementInc = 0; elementInc < oFormElements.length; elementInc++) {
 			var element = oFormElements[elementInc];
-			var oLabelForControl = this.fnCreateLabel(element,"Center"); //2nd parameter is for begin/Center/Right Alignment
 			var oControl = this.fnParseControl(element);
-			switch(element.labelAlignment){
+			isLabelRequired= this.fnIsLabelRequired(element);
+			if(isLabelRequired){
+				var oLabelForControl = this.fnCreateLabel(element,"Center"); //2nd parameter is for begin/Center/Right Alignment
+				switch(element.labelAlignment){
 				case "left":
 				case "Left": 
 						aFormContents.push(oLabelForControl);
@@ -140,19 +159,27 @@ com.incture.template.Parser = {
 				
 				case "top":
 				case "Top": var oVBox = this.fnCreateVBox();
-								oVBox.addItems(oLabelForControl);
+								oVBox.addItem(oLabelForControl);
 								oVBox.addItem(oControl);
 								aFormContents.push(oVBox);
 								break;
+				case "bottom":
+				case "Bottom":
 				case "below":
 				case "Below": var oVBox = this.fnCreateVBox();
 								oVBox.addItem(oControl);
-								oVBox.addItems(oLabelForControl);
+								oVBox.addItem(oLabelForControl);
 								aFormContents.push(oVBox);
 							break;
+				default:
+							aFormContents.push(oLabelForControl);
+							aFormContents.push(oControl);
+						break;
+				}
 			}
-			
-
+			else{
+				aFormContents.push(oControl);
+			}
 		}
 
 		
@@ -473,7 +500,7 @@ com.incture.template.Parser = {
 
 		return toolBar;
 	},
-fnCreateSelect : function(controlData){
+	fnCreateSelect : function(controlData){
 		
 		var oSelect = new sap.m.Select({
 			visible : Boolean(controlData.visible), // boolean
@@ -528,7 +555,79 @@ fnCreateSelect : function(controlData){
 			change : [ function(oEvent) {
 				var control = oEvent.getSource();
 			}, this ]
-		})
+		});
+		return oDateTime;
+	},
+	fnCreateTextArea :function(controlData){
+		var oTextArea = new sap.m.TextArea({
+			visible : Boolean(controlData.visible), // boolean
+			value :  "{"+controlData.model+">"+controlData.bindingName+"}", // string
+			width : controlData.width, // sap.ui.core.CSSSize
+			enabled :  Boolean(controlData.enable), // boolean
+			placeholder : controlData.placeholder, // string
+			editable : true, // boolean, since 1.12.0
+			rows : 2, // int
+			cols : 20, // int
+			height : undefined, // sap.ui.core.CSSSize
+			maxLength :Number.parseInt( controlData.maxlength), // int
+			wrapping : undefined, // sap.ui.core.Wrapping
+			tooltip :  controlData.tooltip, // sap.ui.core.TooltipBase
+			change : [ function(oEvent) {
+				var control = oEvent.getSource();
+			}, this ],
+			liveChange : [ function(oEvent) {
+				var control = oEvent.getSource();
+			}, this ]
+		});
+		return oTextArea;
+	},
+	fnCreateCheckBox : function(controlData){
+		var oCheckBox = new sap.m.CheckBox({
+			visible :  Boolean(controlData.visible), // boolean
+			selected : Boolean("{"+controlData.model+">"+controlData.bindingName+"}"), // boolean
+			enabled : Boolean(controlData.enable), // boolean
+			name : controlData.name, // string
+			text : controlData.label, // string
+			width : controlData.width, // sap.ui.core.CSSSize
+			activeHandling : true, // boolean
+			editable : true, // boolean, since 1.25
+			tooltip : undefined, // sap.ui.core.TooltipBase
+			select : [ function(oEvent) {
+				var control = oEvent.getSource();
+			}, this ]
+		});
+		
+		return oCheckBox;
+	},
+	fnCreateRadioButton: function(controlData){
+		var oRadioButton = new sap.m.RadioButton({
+			visible : Boolean(controlData.visible), // boolean
+			enabled : Boolean(controlData.enable), // boolean
+			selected : Boolean("{"+controlData.model+">"+controlData.bindingName+"}"), // boolean
+			groupName : controlData.name, // string
+			text : controlData.label, // string
+			width : controlData.width, // sap.ui.core.CSSSize
+			editable : true, // boolean, since 1.25
+			tooltip : controlData.tooltip, // sap.ui.core.TooltipBase
+			select : [ function(oEvent) {
+				var control = oEvent.getSource();
+			}, this ]
+		});
+		return oRadioButton;
+	},
+	fnCreateText:function(controlData){
+		
+		var oText = new sap.m.Text({
+			visible : Boolean(controlData.visible), // boolean
+			text : "{"+controlData.model+">"+controlData.bindingName+"}", // string
+			wrapping : true, // boolean
+			textAlign : sap.ui.core.TextAlign.Begin, // sap.ui.core.TextAlign
+			width : controlData.width, // sap.ui.core.CSSSize
+			maxLines : undefined, // int, since 1.13.2
+			tooltip : controlData.tooltip, // sap.ui.core.TooltipBase
+		});
+		return oText;
+		
 	},
 	fnCreateVBox:function(controlData){
 		
@@ -536,7 +635,7 @@ fnCreateSelect : function(controlData){
 			height : "", // sap.ui.core.CSSSize, since 1.9.1
 			width : "", // sap.ui.core.CSSSize, since 1.9.1
 			displayInline : false, // boolean
-			direction : sap.m.FlexDirection.Row, // sap.m.FlexDirection
+			direction : sap.m.FlexDirection.Column, // sap.m.FlexDirection
 			fitContainer : false, // boolean
 			renderType : sap.m.FlexRendertype.Div, // sap.m.FlexRendertype
 			justifyContent : sap.m.FlexJustifyContent.Start, // sap.m.FlexJustifyContent
@@ -544,7 +643,45 @@ fnCreateSelect : function(controlData){
 			tooltip : undefined, // sap.ui.core.TooltipBase
 			items : []
 		// sap.ui.core.Control
-		})
+		});
+		return oVBox;
+	},
+	fnIsLabelRequired:function(controlData){
+		
+		var isLabelReq = true;
+		var controlType = controlData.type;
+		if(controlType!==undefined){
+			controlType = controlType.toLowerCase();
+		}
+		switch(controlType){
+
+		case "input":
+		case "select":
+		case "datetime":
+		case "textarea":
+				isLabelReq = true;
+			break;
+		case "text":
+				if(controlData.label===undefined){
+					isLabelReq = false;
+				}
+				else{
+					isLabelReq = true;
+				}
+				break;
+		case "form":
+		case "checkbox":
+		case "radiobutton":
+				isLabelReq = false;
+			break;
+		
+		default:
+			isLabelReq = false;
+			break;
+		
+		}
+		return isLabelReq;
+		
 	},
 	fnCreateModels:function(){
 		

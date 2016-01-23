@@ -234,7 +234,45 @@
 						}
 						 ]
 
-					} ],
+					} ,
+					{
+						"type" : "text",
+						"label" : "Office",
+						"placeholder" : "your location",
+						"tooltip" : "your location",
+						"bindingName" : "/location",
+						"model" : "idForm",
+						"labelAlignment" : "left",
+						"mandatory" : "true",
+						"maxlength" : "5",
+						"width" : "",
+						"visible" : "true",
+						"enable" : "true",
+						"defaultValue" : "",
+						"valueType" : "",
+						"className" : "",
+						"formatter" : "",
+						"serviceUrl":"com/incture/data/location.json",
+						"itemBinding" : {
+							"itemLabel" : "desc",
+							"itemKey" : "key",
+							"bindingPath" : "/items",
+							"model" : "locationModel"
+						},
+						"events" : [ {
+
+							"type" : "onclick/onchange",
+							"businessMethod" : "",
+							"serviceUrl" : "",
+							"screenRef" : "",
+							"dataObject" : "",
+							"refElement" : "",
+							"refDataPath" : ""
+
+						}
+						 ]
+
+					}],
 					"actions" : [{
                                         
                                             "type": "button",
