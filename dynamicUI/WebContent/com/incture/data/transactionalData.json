@@ -273,21 +273,36 @@
 						 ]
 
 					}],
-					"actions" : [{
-                                        
-                                            "type": "button",
-                                            "label": "Save",
-                                            "tooltip": "",
-                                            "serviceUrl": "",
-                                            "serviceMethod": "get/post/put",
-                                            "screenRef": "",
-                                            "targetControl": {
-                                                "targetDataPath": "",
-                                                "targetDataBind": "",
-                                                "model": ""
-                                            }
-                                        
-                                    } ]
+					"actions" : [
+								  {
+                                   "type": "button",
+                                   "label": "Save",
+                                   "tooltip": "",
+                                   "visible": "true",
+                                   "serviceUrl": "",
+                                   "serviceMethod": "get/post/put",
+                                   "screenRef": "",
+                                   "targetControl": {
+                                   "targetDataPath": "",
+                                   "targetDataBind": "",
+                                   "model": ""
+                                  		}
+                                  },
+                                  {
+                                   "type": "link",
+                                   "label": "Submit",
+                                   "tooltip": "submit data",
+                                   "visible": "true",
+                                   "serviceUrl": "",
+                                   "serviceMethod": "get/post/put",
+                                   "screenRef": "",
+                                   "targetControl": {
+                                   "targetDataPath": "",
+                                   "targetDataBind": "",
+                                   "model": ""
+                                  		}
+                                  }
+                                ]
 
 				} ]
 			} ]

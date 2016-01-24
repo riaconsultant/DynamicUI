@@ -83,9 +83,9 @@ com.incture.template.Parser = {
 				var oControl = this.fnParseControl(control);
 				var oActionControl = this.fnParseControlForActions(control.actions);
 				content.push(oControl);
-				if(oActionControl){
-					content.push(oActionControl);
-				}
+					for(var actionInc=0 ; actionInc< oActionControl.length; actionInc++){
+						content.push(oActionControl[actionInc]);
+					}
 			}
 		}
 
@@ -95,8 +95,8 @@ com.incture.template.Parser = {
 
 		return content;
 	},
-	fnParseControl : function(controlData) {
 	
+	fnParseControl : function(controlData) {
 		var controlType = controlData.type;
 		if(controlType!==undefined){
 			controlType = controlType.toLowerCase();
@@ -126,6 +126,14 @@ com.incture.template.Parser = {
 			break;
 		case "select":
 			oReturnControl = this.fnCreateSelect(controlData);
+			break;
+		case "submit":
+		case "button":
+			oReturnControl = this.fnCreateButton(controlData);
+			break;
+		case "link":
+			oReturnControl = this.fnCreateLink(controlData);
+			break;
 		default:
 			break;
 		}
@@ -133,8 +141,8 @@ com.incture.template.Parser = {
 		sap.ui.getCore().getModel('applicationModel').getProperty("/modelNames").push(controlData.model);
 		return oReturnControl;
 	},
+	
 	fnCreateGrid : function(controlData){
-		
 		var oFormElements = controlData.elements;
 		var aFormContents = [];
 		var isLabelRequired = true;
@@ -181,7 +189,6 @@ com.incture.template.Parser = {
 				aFormContents.push(oControl);
 			}
 		}
-
 		
 		var oGrid = new sap.ui.layout.Grid({
 			visible : true, // boolean
@@ -194,14 +201,13 @@ com.incture.template.Parser = {
 			containerQuery : false, // boolean
 			tooltip : undefined, // sap.ui.core.TooltipBase
 			content : aFormContents
-		// sap.ui.core.Control
 		});
 		
 		return oGrid;
 	},
+	
 	/**Function to generate form control **/
 	fnCreateSimpleForm : function(controlData) {
-
 		var oFormElements = controlData.elements;
 		var aFormContents = [];
 
@@ -291,8 +297,8 @@ com.incture.template.Parser = {
 
 		return oInput;
 	},
+	
 	fnCreateLabel : function(controlData,alignment) {
-
 		if(alignment === undefined)
 			alignment = "Begin";
 		var oLabel = new sap.m.Label({
@@ -500,8 +506,8 @@ com.incture.template.Parser = {
 
 		return toolBar;
 	},
+	
 	fnCreateSelect : function(controlData){
-		
 		var oSelect = new sap.m.Select({
 			visible : Boolean(controlData.visible), // boolean
 			enabled : Boolean(controlData.enable), // boolean
@@ -535,8 +541,8 @@ com.incture.template.Parser = {
 			this.fnCreateModelAndFetchData(controlData,controlData.itemBinding.model);
 			return oSelect;
 	},
+	
 	fnCreateDateTimeInput:function(controlData){
-		
 		var oDateTime = new sap.m.DateTimeInput({
 			visible : Boolean(controlData.visible), // boolean
 			value : "{"+controlData.model+">"+controlData.bindingName+"}", // string
@@ -558,6 +564,7 @@ com.incture.template.Parser = {
 		});
 		return oDateTime;
 	},
+	
 	fnCreateTextArea :function(controlData){
 		var oTextArea = new sap.m.TextArea({
 			visible : Boolean(controlData.visible), // boolean
@@ -581,6 +588,7 @@ com.incture.template.Parser = {
 		});
 		return oTextArea;
 	},
+	
 	fnCreateCheckBox : function(controlData){
 		var oCheckBox = new sap.m.CheckBox({
 			visible :  Boolean(controlData.visible), // boolean
@@ -599,6 +607,7 @@ com.incture.template.Parser = {
 		
 		return oCheckBox;
 	},
+	
 	fnCreateRadioButton: function(controlData){
 		var oRadioButton = new sap.m.RadioButton({
 			visible : Boolean(controlData.visible), // boolean
@@ -615,8 +624,8 @@ com.incture.template.Parser = {
 		});
 		return oRadioButton;
 	},
+	
 	fnCreateText:function(controlData){
-		
 		var oText = new sap.m.Text({
 			visible : Boolean(controlData.visible), // boolean
 			text : "{"+controlData.model+">"+controlData.bindingName+"}", // string
@@ -629,8 +638,8 @@ com.incture.template.Parser = {
 		return oText;
 		
 	},
+	
 	fnCreateVBox:function(controlData){
-		
 		var oVBox =  new sap.m.VBox({
 			height : "", // sap.ui.core.CSSSize, since 1.9.1
 			width : "", // sap.ui.core.CSSSize, since 1.9.1
@@ -646,8 +655,8 @@ com.incture.template.Parser = {
 		});
 		return oVBox;
 	},
+	
 	fnIsLabelRequired:function(controlData){
-		
 		var isLabelReq = true;
 		var controlType = controlData.type;
 		if(controlType!==undefined){
@@ -683,8 +692,8 @@ com.incture.template.Parser = {
 		return isLabelReq;
 		
 	},
+	
 	fnCreateModels:function(){
-		
 		var aModels = sap.ui.getCore().getModel('applicationModel').getProperty('/modelNames');
 		
 		aModels = jQuery.unique(aModels);
@@ -696,8 +705,8 @@ com.incture.template.Parser = {
 			sap.ui.getCore().byId(applicationId).setModel(oModel,model_element);
 		}
 	},
+	
 	fnCreateModelAndFetchData:function(controlData,modelName){
-		
 		var serviceUrl = controlData.serviceUrl;
 		var fetchData = this.fnGetJson(serviceUrl,null,false);
 		var applicationId = sap.ui.getCore().getModel('applicationModel').getProperty('/applicationId');
@@ -732,25 +741,30 @@ com.incture.template.Parser = {
 		return oButton;
 	},
 	
-	fnParseControlForActions : function(controlActions){
-		var oActionControl = null;
-		for(var actionInc=0; actionInc< controlActions.length; actionInc++){
-			var oAction = controlActions[actionInc];
-			oActionControl = this.fnParseAction(oAction);
-		}
-		return oActionControl;
+	fnCreateLink : function(actionData){
+		var oLink = new sap.m.Link({
+			visible : Boolean(actionData.visible), 
+			text : actionData.label, 
+			enabled : Boolean(actionData.enabled), // boolean
+			target : undefined, // string
+			width : undefined, // sap.ui.core.CSSSize
+			href : actionData.screenRef, // sap.ui.core.URI
+			wrapping : false, // boolean
+			subtle : false, // boolean, since 1.22
+			emphasized : Boolean(actionData.emphasized), // boolean, since 1.22
+			tooltip : actionData.tooltip, // sap.ui.core.TooltipBase
+			press : [ function(oEvent) {
+				var control = oEvent.getSource();
+			}, this ]
+		});
+		return oLink;
 	},
 	
-	fnParseAction : function(actionControl){
-		var actionType = actionControl.type;
-		var oActionControl = null;
-		switch(actionType){
-		case "button":
-		case "Button":oActionControl = this.fnCreateButton(actionControl);
-		break;
-		case "link":
-		case "Link":oActionControl = this.fnCreateLink(actionControl);
-		break;
+	fnParseControlForActions : function(controlActions){
+		var oActionControl = [];
+		for(var actionInc=0; actionInc< controlActions.length; actionInc++){
+			var oAction = controlActions[actionInc];
+			oActionControl.push(this.fnParseControl(oAction));
 		}
 		return oActionControl;
 	},
