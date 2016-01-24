@@ -279,8 +279,8 @@
                                    "label": "Save",
                                    "tooltip": "",
                                    "visible": "true",
-                                   "serviceUrl": "",
-                                   "serviceMethod": "get/post/put",
+                                   "serviceUrl": "http://jsonplaceholder.typicode.com/posts/1",
+                                   "serviceMethod": "post",
                                    "screenRef": "",
                                    "targetControl": {
                                    "targetDataPath": "",

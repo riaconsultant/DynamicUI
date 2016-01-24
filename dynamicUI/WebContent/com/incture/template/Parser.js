@@ -14,7 +14,7 @@ com.incture.template.Parser = {
 		var oModel = new sap.ui.model.json.JSONModel();
 		//create json model
 		if (jsonPath) {
-			var data = this.fnGetJson(jsonPath, null, false);
+			var data = this.fnGetJson(jsonPath, null,"get", false);
 			oModel = new sap.ui.model.json.JSONModel(data);
 		}
 		
@@ -45,13 +45,9 @@ com.incture.template.Parser = {
 			content : content,
 			footer : undefined,
 		});
-
 		page.setModel(oModel, "defaultModel");
-
 		// create an app that contains the initial page
-		
 		app.addPage(page);
-
 		return app;
 	},
 
@@ -70,7 +66,6 @@ com.incture.template.Parser = {
 			  },
 			});
 
-//		var aScreens = this.data.app.screen;
 		var aScreens = jsonData.app.screens;
 		if(!aScreens){
 			aScreens=[];
@@ -81,11 +76,17 @@ com.incture.template.Parser = {
 			for (var controlInc = 0; controlInc < aControlsForScreen.length; controlInc++) {
 				var control = aControlsForScreen[controlInc];
 				var oControl = this.fnParseControl(control);
-				var oActionControl = this.fnParseControlForActions(control.actions);
+				var oActionControl = this.fnParseControlForActions(control);
 				content.push(oControl);
-					for(var actionInc=0 ; actionInc< oActionControl.length; actionInc++){
-						content.push(oActionControl[actionInc]);
-					}
+				var actionData=[];
+				actionData.push(new sap.m.ToolbarSpacer({}));
+				for(var actionInc=0 ; actionInc< oActionControl.length; actionInc++){
+					actionData.push(oActionControl[actionInc]);
+					//oControl.addContent(oActionControl[actionInc]);
+				}
+				var actionBar = this.fnCreateToolBar(actionData);
+				content.push(actionBar);
+				
 			}
 		}
 
@@ -96,7 +97,7 @@ com.incture.template.Parser = {
 		return content;
 	},
 	
-	fnParseControl : function(controlData) {
+	fnParseControl : function(controlData, parentControl) {
 		var controlType = controlData.type;
 		if(controlType!==undefined){
 			controlType = controlType.toLowerCase();
@@ -129,10 +130,10 @@ com.incture.template.Parser = {
 			break;
 		case "submit":
 		case "button":
-			oReturnControl = this.fnCreateButton(controlData);
+			oReturnControl = this.fnCreateButton(controlData, parentControl);
 			break;
 		case "link":
-			oReturnControl = this.fnCreateLink(controlData);
+			oReturnControl = this.fnCreateLink(controlData, parentControl);
 			break;
 		default:
 			break;
@@ -445,7 +446,7 @@ com.incture.template.Parser = {
 	},
 
 	/**Function to create and return tool bar **/
-	fnCreateToolBar : function() {
+	fnCreateToolBar : function(toolBarContent) {
 		var toolBar = new sap.m.Toolbar({
 			visible : true,
 			visible : true,
@@ -454,51 +455,7 @@ com.incture.template.Parser = {
 			enabled : true,
 			height : "",
 			design : sap.m.ToolbarDesign.Auto,
-			content : [ new sap.m.ToolbarSpacer({
-				width : ""
-			}), new sap.m.Button({
-				visible : true,
-				text : "Save",
-				type : sap.m.ButtonType.Default,
-				width : "8%",
-				enabled : true,
-				icon : "sap-icon://accept",
-				iconFirst : true,
-				activeIcon : undefined,
-				iconDensityAware : true,
-				tooltip : undefined,
-				ariaDescribedBy : [],
-				ariaLabelledBy : [],
-				tap : [ function(oEvent) {
-					var control = oEvent.getSource();
-				}, this ],
-				press : [ function(oEvent) {
-					var control = oEvent.getSource();
-					alert("save action");
-				}, this ]
-			}), new sap.m.Button({
-				visible : true,
-				text : "Cancel",
-				type : sap.m.ButtonType.Default,
-				width : "8%",
-				enabled : true,
-				icon : "sap-icon://decline",
-				iconFirst : true,
-				activeIcon : undefined,
-				iconDensityAware : true,
-				tooltip : undefined,
-				ariaDescribedBy : [],
-				ariaLabelledBy : [],
-				tap : [ function(oEvent) {
-					var control = oEvent.getSource();
-				}, this ],
-				press : [ function(oEvent) {
-					var control = oEvent.getSource();
-					alert("cancel action");
-				}, this ]
-			}), new sap.m.ToolbarSpacer({
-				width : "10%"
-			}) ],
+			content : toolBarContent,
 			press : [ function(oEvent) {
 				var control = oEvent.getSource();
 			}, this ]
@@ -708,7 +665,7 @@ com.incture.template.Parser = {
 	
 	fnCreateModelAndFetchData:function(controlData,modelName){
 		var serviceUrl = controlData.serviceUrl;
-		var fetchData = this.fnGetJson(serviceUrl,null,false);
+		var fetchData = this.fnGetJson(serviceUrl,null,"get",false);
 		var applicationId = sap.ui.getCore().getModel('applicationModel').getProperty('/applicationId');
 		if(modelName === undefined){
 			modelName = controlData.model;
@@ -717,7 +674,7 @@ com.incture.template.Parser = {
 		sap.ui.getCore().byId(applicationId).setModel(oModel,modelName);
 	},
 /** Function methods for parsing actions **/
-	fnCreateButton : function(actionData){
+	fnCreateButton : function(actionData, parentControl){
 		var oButton = new sap.m.Button({
 			visible : true, // boolean
 			text : actionData.label, // string
@@ -736,8 +693,20 @@ com.incture.template.Parser = {
 			}, this ],
 			press : [ function(oEvent) {
 				var control = oEvent.getSource();
+				var oModel = control.getModel("parentModel").getProperty('/Model').model;
+				var applicationId = sap.ui.getCore().getModel("applicationModel").getProperty('/applicationId');
+				var modelData = sap.ui.getCore().byId(applicationId).getModel(oModel).getData();
+				var method = control.getModel("parentModel").getProperty('/Model').serviceMethod;
+				var serviceURL = control.getModel("parentModel").getProperty('/Action').serviceUrl;
+				
+				var returnData = this.fnGetJson(serviceURL, modelData, method, false);
+				
+				//var url = "http://jsonplaceholder.typicode.com/posts/1";
 			}, this ]
 		});
+		var oModel = new sap.ui.model.json.JSONModel({"Model": parentControl,"Action":actionData});
+		oButton.setModel(oModel,"parentModel");
+		
 		return oButton;
 	},
 	
@@ -760,25 +729,29 @@ com.incture.template.Parser = {
 		return oLink;
 	},
 	
-	fnParseControlForActions : function(controlActions){
+	fnParseControlForActions : function(control){
 		var oActionControl = [];
+		var controlActions = control.actions;
 		for(var actionInc=0; actionInc< controlActions.length; actionInc++){
 			var oAction = controlActions[actionInc];
-			oActionControl.push(this.fnParseControl(oAction));
+			oActionControl.push(this.fnParseControl(oAction, control));
 		}
 		return oActionControl;
 	},
 	/**
 	 * JQuery Ajax methods
 	 */
-	fnGetJson:function(serviceUrl,data,async){
+	fnGetJson:function(serviceUrl, data, method, async, jsonData){
+		jsonData="string";
 		var returnData = {};
+		var that=this;
 		$.ajax({
 			  dataType: "json",
 			  url: serviceUrl,
 			  async: async,
 			  data: data,
-			  success: function(data){
+			  method: method,
+			  success: function(data, jqXHR, options){
 				  returnData =  data;
 			  },
 			  error:function(error){
@@ -786,7 +759,9 @@ com.incture.template.Parser = {
 				  returnData= {};
 			  }
 			});
+		
 		return returnData;
-	}
+	},
+	
 	/** **/
 }

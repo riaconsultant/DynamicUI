@@ -63,7 +63,6 @@
                                     "model": "",
                                     "className": "",
                                     "elements": [{
-                                        
                                             "type": "input",
                                             "label": "Name",
                                             "placeholder": "Your Name",
