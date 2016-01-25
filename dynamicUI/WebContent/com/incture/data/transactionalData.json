@@ -311,14 +311,15 @@
                                    "serviceUrl": "",
                                    "serviceMethod": "post",
                                    "screenRef": "",
-                                   "targetAction":"Message/Normal/Popup",
+                                   "targetAction":"",
                                    "targetControl": {
                                    		"targetDataPath": "",
                                    		"targetDataBind": "",
                                    		"model": ""
-                                  		},
+                                  		}
                                   }
                                 ]
+
 				} ]
 			} ]
 		} ]
