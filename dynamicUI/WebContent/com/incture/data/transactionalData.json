@@ -283,27 +283,42 @@
                                    "serviceMethod": "post",
                                    "screenRef": "",
                                    "targetControl": {
-                                   "targetDataPath": "",
-                                   "targetDataBind": "",
-                                   "model": ""
+                                   		"targetDataPath": "",
+                                   		"targetDataBind": "",
+                                   		"model": ""
                                   		}
                                   },
                                   {
-                                   "type": "link",
-                                   "label": "Submit",
-                                   "tooltip": "submit data",
+                                   "type": "button",
+                                   "label": "Delete",
+                                   "tooltip": "",
                                    "visible": "true",
                                    "serviceUrl": "",
-                                   "serviceMethod": "get/post/put",
+                                   "serviceMethod": "post",
                                    "screenRef": "",
+                                   "icon":"",
                                    "targetControl": {
-                                   "targetDataPath": "",
-                                   "targetDataBind": "",
-                                   "model": ""
+                                   		"targetDataPath": "",
+                                   		"targetDataBind": "",
+                                   		"model": ""
                                   		}
+                                  },
+                                  {
+                                   "type": "button",
+                                   "label": "Cancel",
+                                   "tooltip": "",
+                                   "visible": "true",
+                                   "serviceUrl": "",
+                                   "serviceMethod": "post",
+                                   "screenRef": "",
+                                   "targetAction":"Message/Normal/Popup",
+                                   "targetControl": {
+                                   		"targetDataPath": "",
+                                   		"targetDataBind": "",
+                                   		"model": ""
+                                  		},
                                   }
                                 ]
-
 				} ]
 			} ]
 		} ]

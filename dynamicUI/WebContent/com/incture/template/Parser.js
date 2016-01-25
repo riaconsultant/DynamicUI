@@ -12,12 +12,13 @@ com.incture.template.Parser = {
 	init : function(jsonPath) {
 		
 		var oModel = new sap.ui.model.json.JSONModel();
+		
 		//create json model
 		if (jsonPath) {
 			var data = this.fnGetJson(jsonPath, null,"get", false);
 			oModel = new sap.ui.model.json.JSONModel(data);
 		}
-		
+		//sap.ui.getCore().setModel(oModel,"defaultModel");
 		var app = new sap.m.App({
 			id:oModel.getProperty('/app/app_detail/id'),
 			initialPage : "initalPage"
@@ -54,18 +55,6 @@ com.incture.template.Parser = {
 	/**Function to generate the screens , layouts and all the controls based on input json data **/
 	getContentFromJson : function(jsonData) {
 		var content = [];
-		this.data=[];
-		var that = this;
-		$.ajax({
-			  url: 'com/incture/data/structure.json',
-			  dataType: 'json',
-			  async: false,
-			  data: "",
-			  success: function(data) {
-			    that.data=data;
-			  },
-			});
-
 		var aScreens = jsonData.app.screens;
 		if(!aScreens){
 			aScreens=[];
@@ -84,15 +73,12 @@ com.incture.template.Parser = {
 					actionData.push(oActionControl[actionInc]);
 					//oControl.addContent(oActionControl[actionInc]);
 				}
+				actionData.push(new sap.m.ToolbarSpacer({width:"10%"}));
 				var actionBar = this.fnCreateToolBar(actionData);
 				content.push(actionBar);
 				
 			}
 		}
-
-		/*content.push(this.getForm());
-		content.push(this.getToolBar());
-		content.push(this.getTable());*/
 
 		return content;
 	},
@@ -697,9 +683,9 @@ com.incture.template.Parser = {
 				var applicationId = sap.ui.getCore().getModel("applicationModel").getProperty('/applicationId');
 				var modelData = sap.ui.getCore().byId(applicationId).getModel(oModel).getData();
 				var method = control.getModel("parentModel").getProperty('/Model').serviceMethod;
-				var serviceURL = control.getModel("parentModel").getProperty('/Action').serviceUrl;
+				var actionData = control.getModel("parentModel").getProperty('/Action');
 				
-				var returnData = this.fnGetJson(serviceURL, modelData, method, false);
+				var returnData = this.fnGetJson(actionData.serviceUrl, modelData, method, true, actionData );
 				
 				//var url = "http://jsonplaceholder.typicode.com/posts/1";
 			}, this ]
@@ -741,8 +727,7 @@ com.incture.template.Parser = {
 	/**
 	 * JQuery Ajax methods
 	 */
-	fnGetJson:function(serviceUrl, data, method, async, jsonData){
-		jsonData="string";
+	fnGetJson:function(serviceUrl, data, method, async, actionData){
 		var returnData = {};
 		var that=this;
 		$.ajax({
@@ -753,6 +738,9 @@ com.incture.template.Parser = {
 			  method: method,
 			  success: function(data, jqXHR, options){
 				  returnData =  data;
+				  if(async){
+					  returnData = that.fnParseReturnData(data,actionData);
+				  }
 			  },
 			  error:function(error){
 				  console.log(error);
@@ -763,5 +751,8 @@ com.incture.template.Parser = {
 		return returnData;
 	},
 	
+	fnParseReturnData : function(data, actionData){
+		return data;
+	}
 	/** **/
 }
