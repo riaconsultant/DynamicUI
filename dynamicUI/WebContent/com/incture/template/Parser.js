@@ -686,7 +686,7 @@ com.incture.template.Parser = {
 				var control = oEvent.getSource();
 				var oModel = control.getModel("parentModel").getProperty('/Model').model;
 				var applicationId = sap.ui.getCore().getModel("applicationModel").getProperty('/applicationId');
-				var modelData = sap.ui.getCore().byId(applicationId).getModel(oModel).getData();
+				var modelData = sap.ui.getCore().byId(applicationId).getModel(oModel+"_model").getData();
 				var method = control.getModel("parentModel").getProperty('/Model').serviceMethod;
 				var actionData = control.getModel("parentModel").getProperty('/Action');
 				
@@ -760,6 +760,22 @@ com.incture.template.Parser = {
 	},
 	
 	fnParseReturnData : function(data, actionData){
+		var responseType = "";
+		if(actionData){
+			var targetAction = actionData.targetAction;
+			targetAction = targetAction.toLowerCase();
+			switch(targetAction){
+			case "message":  sap.m.MessageBox.confirm(
+				      	  "Success", {
+				          icon: sap.m.MessageBox.Icon.INFORMATION,
+				          title: "Inormation",
+				          actions: [sap.m.MessageBox.Action.OK],
+				          onClose: function(oAction) {  }
+				      });
+			break;
+			}
+		}
+		
 		return data;
 	}
 	/** **/

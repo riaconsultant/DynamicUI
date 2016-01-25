@@ -285,6 +285,8 @@
                                    "serviceUrl": "http://jsonplaceholder.typicode.com/posts/1",
                                    "serviceMethod": "post",
                                    "screenRef": "",
+                                   "icon":"",
+                                   "targetAction":"Message",
                                    "targetControl": {
                                    		"targetDataPath": "",
                                    		"targetDataBind": "",
@@ -300,6 +302,7 @@
                                    "serviceMethod": "post",
                                    "screenRef": "",
                                    "icon":"",
+                                   "targetAction":"Message",
                                    "targetControl": {
                                    		"targetDataPath": "",
                                    		"targetDataBind": "",
@@ -314,7 +317,8 @@
                                    "serviceUrl": "",
                                    "serviceMethod": "post",
                                    "screenRef": "",
-                                   "targetAction":"",
+                                   "icon":"",
+                                   "targetAction":"Message",
                                    "targetControl": {
                                    		"targetDataPath": "",
                                    		"targetDataBind": "",
