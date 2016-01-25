@@ -43,6 +43,7 @@
         },
         
 			"screens" : [ {
+				"id":"screenId",
 				"layouts":[{
 				"controls" : [ {
 
@@ -55,7 +56,7 @@
 						"label" : "Name",
 						"placeholder" : "your name",
 						"tooltip" : "your name",
-						"bindingName" : "/name",
+						"bindingName" : "name",
 						"model" : "idForm",
 						"labelAlignment" : "left",
 						"mandatory" : "true",
@@ -91,7 +92,7 @@
 						"label" : "Age",
 						"placeholder" : "your age",
 						"tooltip" : "your age",
-						"bindingName" : "/age",
+						"bindingName" : "age",
 						"model" : "idForm",
 						"labelAlignment" : "left",
 						"mandatory" : "true",
@@ -127,7 +128,7 @@
 						"label" : "Company",
 						"placeholder" : "your company",
 						"tooltip" : "your company",
-						"bindingName" : "/company",
+						"bindingName" : "company",
 						"model" : "idForm",
 						"labelAlignment" : "left",
 						"mandatory" : "true",
@@ -160,10 +161,11 @@
 					},
 					{
 						"type" : "select",
+						"id":"idSelect",
 						"label" : "Office",
 						"placeholder" : "your location",
 						"tooltip" : "your location",
-						"bindingName" : "/location",
+						"bindingName" : "location",
 						"model" : "idForm",
 						"labelAlignment" : "left",
 						"mandatory" : "true",
@@ -199,10 +201,11 @@
 					
 					{
 						"type" : "select",
+						"id":"idSelect2",
 						"label" : "Office",
 						"placeholder" : "your location",
 						"tooltip" : "your location",
-						"bindingName" : "/location",
+						"bindingName" : "location",
 						"model" : "idForm",
 						"labelAlignment" : "left",
 						"mandatory" : "true",
@@ -236,11 +239,11 @@
 
 					} ,
 					{
-						"type" : "text",
+						"type" : "checkbox",
 						"label" : "Office",
 						"placeholder" : "your location",
 						"tooltip" : "your location",
-						"bindingName" : "/location",
+						"bindingName" : "location",
 						"model" : "idForm",
 						"labelAlignment" : "left",
 						"mandatory" : "true",

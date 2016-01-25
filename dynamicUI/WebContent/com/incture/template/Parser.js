@@ -64,7 +64,9 @@ com.incture.template.Parser = {
 			var aControlsForScreen = screenElement.layouts[0].controls;
 			for (var controlInc = 0; controlInc < aControlsForScreen.length; controlInc++) {
 				var control = aControlsForScreen[controlInc];
-				var oControl = this.fnParseControl(control);
+				var modelName = control.id+"_model";
+				var oControl = this.fnParseControl(control,screenElement);
+				sap.ui.getCore().getModel('applicationModel').getProperty("/modelNames").push(modelName);
 				var oActionControl = this.fnParseControlForActions(control);
 				content.push(oControl);
 				var actionData=[];
@@ -91,28 +93,28 @@ com.incture.template.Parser = {
 		var oReturnControl = null;
 		switch (controlType) {
 		case "input":
-			oReturnControl = this.fnCreateInput(controlData);
+			oReturnControl = this.fnCreateInput(controlData,parentControl);
 			break;
 		case "radiobutton":
-			oReturnControl = this.fnCreateRadioButton(controlData);
+			oReturnControl = this.fnCreateRadioButton(controlData,parentControl);
 			break;
 		case "checkbox":
-			oReturnControl = this.fnCreateCheckBox(controlData);
+			oReturnControl = this.fnCreateCheckBox(controlData,parentControl);
 			break;
 		case "datetime":
-			oReturnControl = this.fnCreateCheckBox(controlData);
+			oReturnControl = this.fnCreateCheckBox(controlData,parentControl);
 			break;
 		case "textarea":
-			oReturnControl = this.fnCreateTextArea(controlData);
+			oReturnControl = this.fnCreateTextArea(controlData,parentControl);
 			break;
 		case "text":
-			oReturnControl = this.fnCreateText(controlData);
+			oReturnControl = this.fnCreateText(controlData,parentControl);
 			break;
 		case "form":
-			oReturnControl = this.fnCreateGrid(controlData);
+			oReturnControl = this.fnCreateGrid(controlData,parentControl);
 			break;
 		case "select":
-			oReturnControl = this.fnCreateSelect(controlData);
+			oReturnControl = this.fnCreateSelect(controlData,parentControl);
 			break;
 		case "submit":
 		case "button":
@@ -125,19 +127,19 @@ com.incture.template.Parser = {
 			break;
 		}
 
-		sap.ui.getCore().getModel('applicationModel').getProperty("/modelNames").push(controlData.model);
+		
 		return oReturnControl;
 	},
 	
-	fnCreateGrid : function(controlData){
+	fnCreateGrid : function(controlData,parentControl){
 		var oFormElements = controlData.elements;
 		var aFormContents = [];
 		var isLabelRequired = true;
 		
 		for (var elementInc = 0; elementInc < oFormElements.length; elementInc++) {
 			var element = oFormElements[elementInc];
-			var oControl = this.fnParseControl(element);
-			isLabelRequired= this.fnIsLabelRequired(element);
+			var oControl = this.fnParseControl(element,controlData);
+			isLabelRequired= this.fnIsLabelRequired(element,controlData);
 			if(isLabelRequired){
 				var oLabelForControl = this.fnCreateLabel(element,"Center"); //2nd parameter is for begin/Center/Right Alignment
 				switch(element.labelAlignment){
@@ -178,6 +180,7 @@ com.incture.template.Parser = {
 		}
 		
 		var oGrid = new sap.ui.layout.Grid({
+			id:controlData.id,
 			visible : true, // boolean
 			width : "100%", // sap.ui.core.CSSSize
 			vSpacing : 1, // float
@@ -194,14 +197,14 @@ com.incture.template.Parser = {
 	},
 	
 	/**Function to generate form control **/
-	fnCreateSimpleForm : function(controlData) {
+	fnCreateSimpleForm : function(controlData,parentControl) {
 		var oFormElements = controlData.elements;
 		var aFormContents = [];
 
 		for (var elementInc = 0; elementInc < oFormElements.length; elementInc++) {
 			var element = oFormElements[elementInc];
-			var oLabelForControl = this.fnCreateLabel(element);
-			var oControl = this.fnParseControl(element);
+			var oLabelForControl = this.fnCreateLabel(element,parentControl);
+			var oControl = this.fnParseControl(element,parentControl);
 			aFormContents.push(oLabelForControl);
 			aFormContents.push(oControl);
 
@@ -243,10 +246,12 @@ com.incture.template.Parser = {
 		return form;
 	},
 	
-	fnCreateInput : function(controlData) {
+	fnCreateInput : function(controlData,parentControl) {
+		var parentModel = parentControl.id +"_model";
 		var oInput = new sap.m.Input({
+			id:controlData.id,
 			visible : Boolean(controlData.visible), // boolean
-			value : "{" + controlData.model + ">"+controlData.bindingName + "}", // string
+			value : "{" + parentModel + ">/"+controlData.bindingName + "}", // string
 			width : controlData.width, // sap.ui.core.CSSSize
 			enabled :Boolean( controlData.enable), // boolean
 			placeholder : controlData.placeholder, // string
@@ -450,25 +455,29 @@ com.incture.template.Parser = {
 		return toolBar;
 	},
 	
-	fnCreateSelect : function(controlData){
+	fnCreateSelect : function(controlData,parentControl){
+		
+		var parentModel = parentControl.id +"_model";
+		var itemModel = controlData.id+"_model";
 		var oSelect = new sap.m.Select({
+			id:controlData.id,
 			visible : Boolean(controlData.visible), // boolean
 			enabled : Boolean(controlData.enable), // boolean
 			width : "100%", // sap.ui.core.CSSSize
 			maxWidth : "100%", // sap.ui.core.CSSSize
-			selectedKey : "{"+controlData.model+">"+controlData.bindingName+"}", // string, since 1.11
+			selectedKey : "{"+parentModel+">/"+controlData.bindingName+"}", // string, since 1.11
 			selectedItemId : "", // string, since 1.12
 			icon : controlData.icon, // sap.ui.core.URI, since 1.16
 			type : sap.m.SelectType.Default, // sap.m.SelectType, since 1.16
 			autoAdjustWidth : false, // boolean, since 1.16
 			tooltip : controlData.tooltip, // sap.ui.core.TooltipBase
 			items : {
-				path:controlData.itemBinding.model+">"+controlData.itemBinding.bindingPath,
+				path:itemModel+">"+controlData.itemBinding.bindingPath,
 				template: new sap.ui.core.Item({
-					text : "{"+controlData.itemBinding.model+">"+controlData.itemBinding.itemLabel+"}", // string
+					text : "{"+itemModel+">"+controlData.itemBinding.itemLabel+"}", // string
 					enabled : true, // boolean
 					textDirection : sap.ui.core.TextDirection.Inherit, // sap.ui.core.TextDirection
-					key : "{"+controlData.itemBinding.model+">"+controlData.itemBinding.itemKey+"}", // string
+					key : "{"+itemModel+">"+controlData.itemBinding.itemKey+"}", // string
 					tooltip : undefined, // sap.ui.core.TooltipBase
 				}) 
 			}, // sap.ui.core.Item
@@ -481,14 +490,17 @@ com.incture.template.Parser = {
 		/**
 		 * Need to create a model and fetch data from service URL and set it to entire app
 		 */
-			this.fnCreateModelAndFetchData(controlData,controlData.itemBinding.model);
+			this.fnCreateModelAndFetchData(controlData,itemModel);
 			return oSelect;
 	},
 	
-	fnCreateDateTimeInput:function(controlData){
+	fnCreateDateTimeInput:function(controlData,parentControl){
+		var parentModel = parentControl.id +"_model";
+
 		var oDateTime = new sap.m.DateTimeInput({
+			id:controlData.id,
 			visible : Boolean(controlData.visible), // boolean
-			value : "{"+controlData.model+">"+controlData.bindingName+"}", // string
+			value : "{"+parentModel+">/"+controlData.bindingName+"}", // string
 			width : controlData.width, // sap.ui.core.CSSSize
 			enabled : Boolean(controlData.enable), // boolean
 			placeholder : controlData.placeholder, // string
@@ -508,10 +520,14 @@ com.incture.template.Parser = {
 		return oDateTime;
 	},
 	
-	fnCreateTextArea :function(controlData){
+	fnCreateTextArea :function(controlData,parentControl){
+		
+		var parentModel = parentControl.id +"_model";
+		
 		var oTextArea = new sap.m.TextArea({
+			id:controlData.id,
 			visible : Boolean(controlData.visible), // boolean
-			value :  "{"+controlData.model+">"+controlData.bindingName+"}", // string
+			value :  "{"+parentModel+">/"+controlData.bindingName+"}", // string
 			width : controlData.width, // sap.ui.core.CSSSize
 			enabled :  Boolean(controlData.enable), // boolean
 			placeholder : controlData.placeholder, // string
@@ -532,10 +548,14 @@ com.incture.template.Parser = {
 		return oTextArea;
 	},
 	
-	fnCreateCheckBox : function(controlData){
+	fnCreateCheckBox : function(controlData,parentControl){
+		
+		var parentModel = parentControl.id +"_model";
+		
 		var oCheckBox = new sap.m.CheckBox({
+			id:controlData.id,
 			visible :  Boolean(controlData.visible), // boolean
-			selected : Boolean("{"+controlData.model+">"+controlData.bindingName+"}"), // boolean
+			selected : Boolean("{"+parentModel+">/"+controlData.bindingName+"}"), // boolean
 			enabled : Boolean(controlData.enable), // boolean
 			name : controlData.name, // string
 			text : controlData.label, // string
@@ -551,11 +571,15 @@ com.incture.template.Parser = {
 		return oCheckBox;
 	},
 	
-	fnCreateRadioButton: function(controlData){
+	fnCreateRadioButton: function(controlData,parentControl){
+		
+		var parentModel = parentControl.id +"_model";
+		
 		var oRadioButton = new sap.m.RadioButton({
+			id:controlData.id,
 			visible : Boolean(controlData.visible), // boolean
 			enabled : Boolean(controlData.enable), // boolean
-			selected : Boolean("{"+controlData.model+">"+controlData.bindingName+"}"), // boolean
+			selected : Boolean("{"+parentModel+">/"+controlData.bindingName+"}"), // boolean
 			groupName : controlData.name, // string
 			text : controlData.label, // string
 			width : controlData.width, // sap.ui.core.CSSSize
@@ -568,10 +592,13 @@ com.incture.template.Parser = {
 		return oRadioButton;
 	},
 	
-	fnCreateText:function(controlData){
+	fnCreateText:function(controlData,parentControl){
+		var parentModel = parentControl.id +"_model";
+		
 		var oText = new sap.m.Text({
+			id:controlData.id,
 			visible : Boolean(controlData.visible), // boolean
-			text : "{"+controlData.model+">"+controlData.bindingName+"}", // string
+			text : "{"+parentModel+">/"+controlData.bindingName+"}", // string
 			wrapping : true, // boolean
 			textAlign : sap.ui.core.TextAlign.Begin, // sap.ui.core.TextAlign
 			width : controlData.width, // sap.ui.core.CSSSize
@@ -605,33 +632,11 @@ com.incture.template.Parser = {
 		if(controlType!==undefined){
 			controlType = controlType.toLowerCase();
 		}
-		switch(controlType){
-
-		case "input":
-		case "select":
-		case "datetime":
-		case "textarea":
-				isLabelReq = true;
-			break;
-		case "text":
-				if(controlData.label===undefined){
-					isLabelReq = false;
-				}
-				else{
-					isLabelReq = true;
-				}
-				break;
-		case "form":
-		case "checkbox":
-		case "radiobutton":
-				isLabelReq = false;
-			break;
-		
-		default:
+		if(controlData.label === undefined || controlData.label === ""){
 			isLabelReq = false;
-			break;
-		
 		}
+		else
+			isLabelReq = true;
 		return isLabelReq;
 		
 	},
@@ -651,15 +656,15 @@ com.incture.template.Parser = {
 	
 	fnCreateModelAndFetchData:function(controlData,modelName){
 		var serviceUrl = controlData.serviceUrl;
-		var fetchData = this.fnGetJson(serviceUrl,null,"get",false);
 		var applicationId = sap.ui.getCore().getModel('applicationModel').getProperty('/applicationId');
 		if(modelName === undefined){
 			modelName = controlData.model;
 		}
-		var oModel = new sap.ui.model.json.JSONModel(fetchData);
+		var oModel = new sap.ui.model.json.JSONModel();
+		var fetchData = this.fnGetJson(serviceUrl,null,"get",true,null,oModel);
 		sap.ui.getCore().byId(applicationId).setModel(oModel,modelName);
 	},
-/** Function methods for parsing actions **/
+	/** Function methods for parsing actions **/
 	fnCreateButton : function(actionData, parentControl){
 		var oButton = new sap.m.Button({
 			visible : true, // boolean
@@ -727,7 +732,7 @@ com.incture.template.Parser = {
 	/**
 	 * JQuery Ajax methods
 	 */
-	fnGetJson:function(serviceUrl, data, method, async, actionData){
+	fnGetJson:function(serviceUrl, data, method, async, actionData,model){
 		var returnData = {};
 		var that=this;
 		$.ajax({
@@ -740,6 +745,9 @@ com.incture.template.Parser = {
 				  returnData =  data;
 				  if(async){
 					  returnData = that.fnParseReturnData(data,actionData);
+					  if(model !== undefined){
+						  model.setData(data);
+					  }
 				  }
 			  },
 			  error:function(error){
