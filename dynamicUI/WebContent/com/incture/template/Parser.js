@@ -101,8 +101,8 @@ com.incture.template.Parser = {
 		case "checkbox":
 			oReturnControl = this.fnCreateCheckBox(controlData,parentControl);
 			break;
-		case "datetime":
-			oReturnControl = this.fnCreateCheckBox(controlData,parentControl);
+		case "datepicker":
+			oReturnControl = this.fnCreateDatePicker(controlData,parentControl);
 			break;
 		case "textarea":
 			oReturnControl = this.fnCreateTextArea(controlData,parentControl);
@@ -494,30 +494,27 @@ com.incture.template.Parser = {
 			return oSelect;
 	},
 	
-	fnCreateDateTimeInput:function(controlData,parentControl){
+	fnCreateDatePicker:function(controlData,parentControl){
 		var parentModel = parentControl.id +"_model";
 
-		var oDateTime = new sap.m.DateTimeInput({
-			id:controlData.id,
+		
+		var oDatePicker = new sap.m.DatePicker({
 			visible : Boolean(controlData.visible), // boolean
-			value : "{"+parentModel+">/"+controlData.bindingName+"}", // string
+			value :  "{"+parentModel+">/"+controlData.bindingName+"}", // string
 			width : controlData.width, // sap.ui.core.CSSSize
 			enabled : Boolean(controlData.enable), // boolean
-			placeholder : controlData.placeholder, // string
+			placeholder :  controlData.placeholder, // string
 			editable : true, // boolean, since 1.12.0
-			type : sap.m.DateTimeInputType.Date, // sap.m.DateTimeInputType
-			displayFormat : undefined, // string
-			valueFormat : undefined, // string
+			displayFormat : controlData.displayDateFormat, // string
+			valueFormat : controlData.valueDateFormat, // string
 			dateValue : undefined, // object
+			displayFormatType : "", // string, since 1.28.6
 			tooltip : controlData.tooltip, // sap.ui.core.TooltipBase
 			change : [ function(oEvent) {
 				var control = oEvent.getSource();
-			}, this ],
-			change : [ function(oEvent) {
-				var control = oEvent.getSource();
 			}, this ]
-		});
-		return oDateTime;
+		})
+		return oDatePicker;
 	},
 	
 	fnCreateTextArea :function(controlData,parentControl){
@@ -532,8 +529,8 @@ com.incture.template.Parser = {
 			enabled :  Boolean(controlData.enable), // boolean
 			placeholder : controlData.placeholder, // string
 			editable : true, // boolean, since 1.12.0
-			rows : 2, // int
-			cols : 20, // int
+			rows : Number(controlData.rows), // int
+			cols : Number(controlData.cols), // int
 			height : undefined, // sap.ui.core.CSSSize
 			maxLength :Number.parseInt( controlData.maxlength), // int
 			wrapping : undefined, // sap.ui.core.Wrapping
@@ -555,7 +552,7 @@ com.incture.template.Parser = {
 		var oCheckBox = new sap.m.CheckBox({
 			id:controlData.id,
 			visible :  Boolean(controlData.visible), // boolean
-			selected : Boolean("{"+parentModel+">/"+controlData.bindingName+"}"), // boolean
+			selected : "{"+parentModel+">/"+controlData.bindingName+"}", // boolean
 			enabled : Boolean(controlData.enable), // boolean
 			name : controlData.name, // string
 			text : controlData.label, // string
@@ -579,8 +576,8 @@ com.incture.template.Parser = {
 			id:controlData.id,
 			visible : Boolean(controlData.visible), // boolean
 			enabled : Boolean(controlData.enable), // boolean
-			selected : Boolean("{"+parentModel+">/"+controlData.bindingName+"}"), // boolean
-			groupName : controlData.name, // string
+			selected : "{"+parentModel+">/"+controlData.bindingName+"}", // boolean
+			groupName : controlData.groupName, // string
 			text : controlData.label, // string
 			width : controlData.width, // sap.ui.core.CSSSize
 			editable : true, // boolean, since 1.25
@@ -655,7 +652,7 @@ com.incture.template.Parser = {
 	},
 	
 	fnCreateModelAndFetchData:function(controlData,modelName){
-		var serviceUrl = controlData.serviceUrl;
+		var serviceUrl = controlData.itemBinding.serviceUrl;
 		var applicationId = sap.ui.getCore().getModel('applicationModel').getProperty('/applicationId');
 		if(modelName === undefined){
 			modelName = controlData.model;

@@ -44,6 +44,7 @@
         
 			"screens" : [ {
 				"id":"screenId",
+				"title":"screen Title",
 				"layouts":[{
 				"controls" : [ {
 
@@ -177,11 +178,11 @@
 						"valueType" : "",
 						"className" : "",
 						"formatter" : "",
-						"serviceUrl":"com/incture/data/location.json",
 						"itemBinding" : {
 							"itemLabel" : "desc",
 							"itemKey" : "key",
 							"bindingPath" : "/items",
+							"serviceUrl":"com/incture/data/location.json",
 							"model" : "locationModel"
 						},
 						"events" : [ {
@@ -217,12 +218,12 @@
 						"valueType" : "",
 						"className" : "",
 						"formatter" : "",
-						"serviceUrl":"com/incture/data/location.json",
 						"itemBinding" : {
 							"itemLabel" : "desc",
 							"itemKey" : "key",
 							"bindingPath" : "/items",
-							"model" : "locationModel"
+							"model" : "locationModel",
+							"serviceUrl":"com/incture/data/location.json"
 						},
 						"events" : [ {
 
@@ -239,15 +240,20 @@
 
 					} ,
 					{
-						"type" : "checkbox",
+						"type" : "datepicker",
 						"label" : "Office",
-						"placeholder" : "your location",
-						"tooltip" : "your location",
-						"bindingName" : "location",
+						"placeholder" : "date",
+						"tooltip" : "date",
+						"bindingName" : "date",
 						"model" : "idForm",
 						"labelAlignment" : "left",
 						"mandatory" : "true",
+						"groupName":"radioGroup1",
 						"maxlength" : "5",
+						"cols":"20",
+						"rows":"2",
+						"displayDateFormat":"YYYY-MM-dd",
+                        "valueDateFormat":"YYYY-MM-dd",
 						"width" : "",
 						"visible" : "true",
 						"enable" : "true",
@@ -255,11 +261,11 @@
 						"valueType" : "",
 						"className" : "",
 						"formatter" : "",
-						"serviceUrl":"com/incture/data/location.json",
 						"itemBinding" : {
 							"itemLabel" : "desc",
 							"itemKey" : "key",
 							"bindingPath" : "/items",
+							"serviceUrl":"com/incture/data/location.json",
 							"model" : "locationModel"
 						},
 						"events" : [ {

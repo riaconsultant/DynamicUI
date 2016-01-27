@@ -79,11 +79,14 @@
                                             "valueType": "",
                                             "className": "",
                                             "formatter": "",
+                                            "displayDateFormat":"",
+                                            "valueDateFormat":"",
                                             "itemBinding": {
                                                 "itemLabel": "",
                                                 "itemKey": "",
                                                 "bindingPath": "",
-                                                "model": ""
+                                                "model": "",
+                                                "serviceUrl":"",
                                             },
                                             "events": [{
                                                 
