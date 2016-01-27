@@ -10,18 +10,18 @@ jQuery.sap.declare("com.incture.template.Parser");
 com.incture.template.Parser = {
 
 	init : function(jsonPath) {
-		
 		var oModel = new sap.ui.model.json.JSONModel();
-		
+	
 		//create json model
 		if (jsonPath) {
 			var data = this.fnGetJson(jsonPath, null,"get", false);
 			oModel = new sap.ui.model.json.JSONModel(data);
 		}
 		//sap.ui.getCore().setModel(oModel,"defaultModel");
+		var initialPageId = oModel.getData().app.screens[0].id;
 		var app = new sap.m.App({
 			id:oModel.getProperty('/app/app_detail/id'),
-			initialPage : "initalPage"
+			initialPage : initialPageId
 		});
 		
 		/** One model to hold our global values - */
@@ -31,55 +31,99 @@ com.incture.template.Parser = {
 		});
 		sap.ui.getCore().setModel(applicationModel,"applicationModel");
 		
-		//create screens and layouts from the data
-		var content = this.getContentFromJson(oModel.getData());
+		this.fnCreateScreensFromJson(oModel);
 		
-		/**
-		 * function to create models 
-		 */
-		
+		/** function to create models */
 		this.fnCreateModels();
 		
-		var page = new sap.m.Page({
-			id : "initalPage",
-			title : "Template Test",
-			content : content,
-			footer : undefined,
-		});
-		page.setModel(oModel, "defaultModel");
-		// create an app that contains the initial page
-		app.addPage(page);
 		return app;
 	},
-
-	/**Function to generate the screens , layouts and all the controls based on input json data **/
-	getContentFromJson : function(jsonData) {
-		var content = [];
-		var aScreens = jsonData.app.screens;
-		if(!aScreens){
-			aScreens=[];
-		}
+	
+	fnCreateScreensFromJson : function(oModel){
+		var structureData = oModel.getData();
+		var aScreens = structureData.app.screens;
 		for (var incScreen = 0; incScreen < aScreens.length; incScreen++) {
 			var screenElement = aScreens[incScreen];
-			var aControlsForScreen = screenElement.layouts[0].controls;
-			for (var controlInc = 0; controlInc < aControlsForScreen.length; controlInc++) {
-				var control = aControlsForScreen[controlInc];
-				var modelName = control.id+"_model";
-				var oControl = this.fnParseControl(control,screenElement);
-				sap.ui.getCore().getModel('applicationModel').getProperty("/modelNames").push(modelName);
-				var oActionControl = this.fnParseControlForActions(control);
-				content.push(oControl);
-				var actionData=[];
-				actionData.push(new sap.m.ToolbarSpacer({}));
-				for(var actionInc=0 ; actionInc< oActionControl.length; actionInc++){
-					actionData.push(oActionControl[actionInc]);
-					//oControl.addContent(oActionControl[actionInc]);
-				}
-				actionData.push(new sap.m.ToolbarSpacer({width:"10%"}));
-				var actionBar = this.fnCreateToolBar(actionData);
-				content.push(actionBar);
-				
+			var oScreen = this.fnParseScreenType(screenElement);
+			oScreen.setModel(oModel, "defaultModel");
+		}
+	},
+	
+	fnParseScreenType : function(screenElement){
+		var screenType = screenElement.type;
+		screenType = screenType.toLowerCase();
+		var returnScreen = null;
+		switch(screenType){
+			case "popup" : returnScreen= this.fnCreatePopUp(screenElement);
+			break;
+			default: returnScreen = this.fnCreatePage(screenElement);
+					 sap.ui.getCore().byId(sap.ui.getCore().getModel("applicationModel").getProperty('/applicationId')).addPage(returnScreen);
+			break;
+		}
+		return returnScreen;
+	},
+
+	fnCreatePage : function(screenElement){
+		var content = this.getContentFromJson(screenElement);
+		
+		var page = new sap.m.Page({
+			id : screenElement.id, 
+			busy : false, 
+			busyIndicatorDelay : 1000,
+			visible : screenElement.visible, 
+			title : screenElement.title, 
+			titleLevel : sap.ui.core.TitleLevel.Auto,
+			showNavButton : (screenElement.navBack === "true"), 
+			showHeader : true, 
+			showSubHeader : true, 
+			navButtonText : undefined, 
+			enableScrolling : true, 
+			icon : undefined, 
+			backgroundDesign : sap.m.PageBackgroundDesign.Standard, 
+			navButtonType : sap.m.ButtonType.Back,
+			showFooter : true, 
+			contentOnlyBusy : false, 
+			tooltip : undefined, // sap.ui.core.TooltipBase
+			content : content, 
+			validateFieldGroup : [ function(oEvent) {
+				var control = oEvent.getSource();
+			}, this ],
+			navButtonTap : [ function(oEvent) {
+				var control = oEvent.getSource();
+			}, this ],
+			navButtonPress : [ function(oEvent) {
+				var control = oEvent.getSource();
+				var appId = sap.ui.getCore().getModel("applicationModel").getProperty('/applicationId');
+				sap.ui.getCore().byId(appId).back();
+			}, this ]
+		});
+		return page;
+	},
+	
+	/**Function to generate the screens , layouts and all the controls based on input json data **/
+	getContentFromJson : function(screenElement) {
+		var content = [];
+//		var aScreens = jsonData.app.screens;
+//		if(!aScreens){
+//			aScreens=[];
+//		}
+		var aControlsForScreen = screenElement.layouts[0].controls;
+		for (var controlInc = 0; controlInc < aControlsForScreen.length; controlInc++) {
+			var control = aControlsForScreen[controlInc];
+			var modelName = control.id+"_model";
+			var oControl = this.fnParseControl(control,screenElement);
+			sap.ui.getCore().getModel('applicationModel').getProperty("/modelNames").push(modelName);
+			var oActionControl = this.fnParseControlForActions(control);
+			content.push(oControl);
+			var actionData=[];
+			actionData.push(new sap.m.ToolbarSpacer({}));
+			for(var actionInc=0 ; actionInc< oActionControl.length; actionInc++){
+				actionData.push(oActionControl[actionInc]);
+				//oControl.addContent(oActionControl[actionInc]);
 			}
+			actionData.push(new sap.m.ToolbarSpacer({width:"10%"}));
+			var actionBar = this.fnCreateToolBar(actionData);
+			content.push(actionBar);
 		}
 
 		return content;
@@ -689,6 +733,7 @@ com.incture.template.Parser = {
 				
 				var returnData = this.fnGetJson(actionData.serviceUrl, modelData, method, true, actionData );
 				
+				sap.ui.getCore().byId(applicationId).to(actionData.targetControl.targetScreenId);
 				//var url = "http://jsonplaceholder.typicode.com/posts/1";
 			}, this ]
 		});

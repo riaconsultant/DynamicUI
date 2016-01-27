@@ -42,9 +42,18 @@
             }
         },
         
-			"screens" : [ {
-				"id":"screenId",
-				"title":"screen Title",
+		"screens" : [{
+				"id": "screenId",
+                "type": "Normal",
+                "title": "Screen Title",
+                "navBack":"false",
+                "navUrl": "",
+                "width": "",
+                "height": "",
+                "default": "",
+                "events": [{
+                    "init": ""
+                }],
 				"layouts":[{
 				"controls" : [ {
 
@@ -294,6 +303,7 @@
                                    "icon":"",
                                    "targetAction":"Message",
                                    "targetControl": {
+                                   		"targetScreenId":"detailScreen1",
                                    		"targetDataPath": "",
                                    		"targetDataBind": "",
                                    		"model": ""
@@ -310,6 +320,7 @@
                                    "icon":"",
                                    "targetAction":"Message",
                                    "targetControl": {
+                                   		"targetScreenId":"",
                                    		"targetDataPath": "",
                                    		"targetDataBind": "",
                                    		"model": ""
@@ -326,6 +337,7 @@
                                    "icon":"",
                                    "targetAction":"Message",
                                    "targetControl": {
+                                   		"targetScreenId":"",
                                    		"targetDataPath": "",
                                    		"targetDataBind": "",
                                    		"model": ""
@@ -335,7 +347,176 @@
 
 				} ]
 			} ]
-		} ]
+		},
+		{
+				"id": "detailScreen1",
+                "type": "Normal",
+                "title": "Detail Title",
+                "navBack":"true",
+                "navUrl": "",
+                "width": "",
+                "height": "",
+                "default": "",
+                "events": [{
+                    "init": ""
+                }],
+				"layouts":[{
+				"controls" : [ {
+
+					"type" : "Form",
+					"id" : "idDetailForm",
+					"model" : "idDetailForm",
+					"className" : "",
+					"elements" : [ {
+						"type" : "input",
+						"label" : "Name",
+						"placeholder" : "your name",
+						"tooltip" : "your name",
+						"bindingName" : "name",
+						"model" : "idDetailForm",
+						"labelAlignment" : "left",
+						"mandatory" : "true",
+						"maxlength" : "5",
+						"width" : "",
+						"visible" : "true",
+						"enable" : "true",
+						"defaultValue" : "",
+						"valueType" : "",
+						"className" : "",
+						"formatter" : "",
+						"itemBinding" : {
+							"itemLabel" : "",
+							"itemKey" : "",
+							"bindingPath" : "",
+							"model" : ""
+						},
+						"events" : [ {
+
+							"type" : "onclick/onchange",
+							"businessMethod" : "",
+							"serviceUrl" : "",
+							"screenRef" : "",
+							"dataObject" : "",
+							"refElement" : "",
+							"refDataPath" : ""
+
+						} ]
+
+					},
+					 {
+						"type" : "input",
+						"label" : "Age",
+						"placeholder" : "your age",
+						"tooltip" : "your age",
+						"bindingName" : "age",
+						"model" : "idDetailForm",
+						"labelAlignment" : "left",
+						"mandatory" : "true",
+						"maxlength" : "5",
+						"width" : "",
+						"visible" : "true",
+						"enable" : "true",
+						"defaultValue" : "",
+						"valueType" : "",
+						"className" : "",
+						"formatter" : "",
+						"itemBinding" : {
+							"itemLabel" : "",
+							"itemKey" : "",
+							"bindingPath" : "",
+							"model" : ""
+						},
+						"events" : [ {
+
+							"type" : "onclick/onchange",
+							"businessMethod" : "",
+							"serviceUrl" : "",
+							"screenRef" : "",
+							"dataObject" : "",
+							"refElement" : "",
+							"refDataPath" : ""
+
+						} ]
+
+					} ,
+					 {
+						"type" : "input",
+						"label" : "Company",
+						"placeholder" : "your company",
+						"tooltip" : "your company",
+						"bindingName" : "company",
+						"model" : "idDetailForm",
+						"labelAlignment" : "left",
+						"mandatory" : "true",
+						"maxlength" : "5",
+						"width" : "",
+						"visible" : "true",
+						"enable" : "true",
+						"defaultValue" : "",
+						"valueType" : "",
+						"className" : "",
+						"formatter" : "",
+						"itemBinding" : {
+							"itemLabel" : "",
+							"itemKey" : "",
+							"bindingPath" : "",
+							"model" : ""
+						},
+						"events" : [ {
+
+							"type" : "onclick/onchange",
+							"businessMethod" : "",
+							"serviceUrl" : "",
+							"screenRef" : "",
+							"dataObject" : "",
+							"refElement" : "",
+							"refDataPath" : ""
+
+						} ]
+
+					}],
+					"actions" : [
+								  {
+                                   "type": "button",
+                                   "label": "Save",
+                                   "tooltip": "",
+                                   "visible": "true",
+                                   "serviceUrl": "http://jsonplaceholder.typicode.com/posts/1",
+                                   "serviceMethod": "post",
+                                   "screenRef": "",
+                                   "icon":"",
+                                   "targetAction":"Message",
+                                   "targetControl": {
+                                   		"targetScreenId":"",
+                                   		"targetDataPath": "",
+                                   		"targetDataBind": "",
+                                   		"model": ""
+                                  		}
+                                  },
+                                  {
+                                   "type": "button",
+                                   "label": "Cancel",
+                                   "tooltip": "",
+                                   "visible": "true",
+                                   "serviceUrl": "",
+                                   "serviceMethod": "post",
+                                   "screenRef": "",
+                                   "icon":"",
+                                   "targetAction":"Message",
+                                   "targetControl": {
+                                   		"targetScreenId":"",
+                                   		"targetDataPath": "",
+                                   		"targetDataBind": "",
+                                   		"model": ""
+                                  		}
+                                  }
+                                ]
+
+				} ]
+			} ]
+		}
+
+		]
 
 		}
 	}

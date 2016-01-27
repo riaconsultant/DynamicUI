@@ -46,6 +46,7 @@
                 "id": "",
                 "type": "Normal|Popup",
                 "title": "Screen",
+                "navBack":"false",
                 "navUrl": "",
                 "width": "",
                 "height": "",
@@ -110,6 +111,7 @@
                                             "serviceMethod": "get/post/put",
                                             "screenRef": "",
                                             "targetControl": {
+                                            	"targetScreenId":"",
                                                 "targetDataPath": "",
                                                 "targetDataBind": "",
                                                 "model": ""
