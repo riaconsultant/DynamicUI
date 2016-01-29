@@ -10,6 +10,10 @@ jQuery.sap.declare("com.incture.template.Parser");
 com.incture.template.Parser = {
 
 	init : function(jsonPath) {
+		jQuery.sap.require("com.incture.template.router");
+		//this.router = "com.incture.template.router";
+		com.incture.template.router.init()
+		
 		var oModel = new sap.ui.model.json.JSONModel();
 	
 		//create json model
@@ -36,6 +40,9 @@ com.incture.template.Parser = {
 		/** function to create models */
 		this.fnCreateModels();
 		
+		//listen or changing hash
+		Path.listen();
+		
 		return app;
 	},
 	
@@ -58,6 +65,10 @@ com.incture.template.Parser = {
 			break;
 			default: returnScreen = this.fnCreatePage(screenElement);
 					 sap.ui.getCore().byId(sap.ui.getCore().getModel("applicationModel").getProperty('/applicationId')).addPage(returnScreen);
+					 Path.map("#/"+returnScreen.getId()).to(function(){
+							sap.ui.getCore().byId(sap.ui.getCore().getModel("applicationModel").getProperty('/applicationId')).to(returnScreen.getId());
+						});
+
 			break;
 		}
 		return returnScreen;
@@ -95,6 +106,7 @@ com.incture.template.Parser = {
 				var control = oEvent.getSource();
 				var appId = sap.ui.getCore().getModel("applicationModel").getProperty('/applicationId');
 				sap.ui.getCore().byId(appId).back();
+				com.incture.template.router.setHash("");
 			}, this ]
 		});
 		return page;
@@ -725,21 +737,19 @@ com.incture.template.Parser = {
 			}, this ],
 			press : [ function(oEvent) {
 				var control = oEvent.getSource();
-				var oModel = control.getModel("parentModel").getProperty('/Model').model;
+				var oModelName = control.getModel("parentModel").getProperty('/ParentId');
 				var applicationId = sap.ui.getCore().getModel("applicationModel").getProperty('/applicationId');
-				var modelData = sap.ui.getCore().byId(applicationId).getModel(oModel+"_model").getData();
-				var method = control.getModel("parentModel").getProperty('/Model').serviceMethod;
+				var modelData = sap.ui.getCore().byId(applicationId).getModel(oModelName+"_model").getData();
 				var actionData = control.getModel("parentModel").getProperty('/Action');
+				var method = actionData.serviceMethod;
 				
 				var returnData = this.fnGetJson(actionData.serviceUrl, modelData, method, true, actionData );
-				
-				sap.ui.getCore().byId(applicationId).to(actionData.targetControl.targetScreenId);
-				//var url = "http://jsonplaceholder.typicode.com/posts/1";
+				// nav to detailscreen
+				com.incture.template.router.setHash(actionData.targetControl.targetScreenId);
 			}, this ]
 		});
-		var oModel = new sap.ui.model.json.JSONModel({"Model": parentControl,"Action":actionData});
+		var oModel = new sap.ui.model.json.JSONModel({"Action":actionData,"ParentId":parentControl.id});
 		oButton.setModel(oModel,"parentModel");
-		
 		return oButton;
 	},
 	
