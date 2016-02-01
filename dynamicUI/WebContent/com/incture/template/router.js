@@ -8,8 +8,6 @@ com.incture.template.router = {
 	init : function(){
 		//var oHashChanger = this.hashChanger.getInstance();  
 		this.hashChanger.attachEvent("hashChanged", function(oEvent) {  
-			debugger;
-			
 		  alert(oEvent.getParameter("newHash") + "," + oEvent.getParameter("oldHash"));  
 		});  
 	},

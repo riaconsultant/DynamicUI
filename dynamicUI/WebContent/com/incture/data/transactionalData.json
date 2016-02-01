@@ -1,6 +1,8 @@
 {
-    "app": {
-        "app_detail": {
+    "app": 
+	{
+        "app_detail": 
+		{
             "id": "myApp",
             "stxt": "short desc",
             "lgtxt": "Long desc",
@@ -8,15 +10,17 @@
             "desc": "Application details",
             "version": "v1.0",
             "client": "Customer name",
-            "mobile": false,
+            "mobile": "true",
             "favIcon": "Path",
             "homeIcon": "Path"
         },
-        "navigation": {
+        "navigation": 
+		{
             "align": "Left|Right",
             "search": "True",
             "className": "",
-            "menu": {
+            "menu": 
+			{
                 "label": "",
                 "link": "",
                 "click": "",
@@ -27,7 +31,8 @@
                 "toolTip": "",
                 "icon": "",
                 "iconAlign": "",
-                "menu": {
+                "menu": 
+				{
                     "label": "",
                     "link": "",
                     "click": "",
@@ -42,26 +47,36 @@
             }
         },
         
-		"screens" : [{
-				"id": "screenId",
-                "type": "Normal",
-                "title": "Screen Title",
-                "navBack":"false",
-                "navUrl": "",
-                "width": "",
-                "height": "",
-                "default": "",
-                "events": [{
-                    "init": ""
-                }],
-				"layouts":[{
-				"controls" : [ {
-
+		"screens" : 
+		[
+		{
+			"id": "screenId",
+            "type": "Normal",
+            "title": "Screen Title",
+            "navBack":"false",
+            "navUrl": "",
+            "width": "",
+            "height": "",
+            "default": "",
+            "events": 
+			[
+			{
+                "init": ""
+            }
+			],
+			"layouts":
+			[
+			{
+				"controls" : 
+				[ 
+				{
 					"type" : "Form",
 					"id" : "idForm",
 					"model" : "idForm",
 					"className" : "",
-					"elements" : [ {
+					"elements" : 
+					[ 
+					{
 						"type" : "input",
 						"label" : "Name",
 						"placeholder" : "your name",
@@ -79,14 +94,16 @@
 						"valueType" : "",
 						"className" : "",
 						"formatter" : "",
-						"itemBinding" : {
+						"itemBinding" : 
+						{
 							"itemLabel" : "",
 							"itemKey" : "",
 							"bindingPath" : "",
 							"model" : ""
 						},
-						"events" : [ {
-
+						"events" : 
+						[
+						{
 							"type" : "onclick/onchange",
 							"businessMethod" : "",
 							"serviceUrl" : "",
@@ -94,11 +111,10 @@
 							"dataObject" : "",
 							"refElement" : "",
 							"refDataPath" : ""
-
-						} ]
-
+						}
+						]
 					},
-					 {
+					{
 						"type" : "input",
 						"label" : "Age",
 						"placeholder" : "your age",
@@ -116,14 +132,16 @@
 						"valueType" : "",
 						"className" : "",
 						"formatter" : "",
-						"itemBinding" : {
+						"itemBinding" : 
+						{
 							"itemLabel" : "",
 							"itemKey" : "",
 							"bindingPath" : "",
 							"model" : ""
 						},
-						"events" : [ {
-
+						"events" : 
+						[ 
+						{
 							"type" : "onclick/onchange",
 							"businessMethod" : "",
 							"serviceUrl" : "",
@@ -131,11 +149,10 @@
 							"dataObject" : "",
 							"refElement" : "",
 							"refDataPath" : ""
-
-						} ]
-
-					} ,
-					 {
+						}
+						]
+					},
+					{
 						"type" : "input",
 						"label" : "Company",
 						"placeholder" : "your company",
@@ -153,14 +170,16 @@
 						"valueType" : "",
 						"className" : "",
 						"formatter" : "",
-						"itemBinding" : {
+						"itemBinding" : 
+						{
 							"itemLabel" : "",
 							"itemKey" : "",
 							"bindingPath" : "",
 							"model" : ""
 						},
-						"events" : [ {
-
+						"events" : 
+						[ 
+						{
 							"type" : "onclick/onchange",
 							"businessMethod" : "",
 							"serviceUrl" : "",
@@ -168,9 +187,8 @@
 							"dataObject" : "",
 							"refElement" : "",
 							"refDataPath" : ""
-
-						} ]
-
+						}
+						]
 					},
 					{
 						"type" : "select",
@@ -191,15 +209,17 @@
 						"valueType" : "",
 						"className" : "",
 						"formatter" : "",
-						"itemBinding" : {
+						"itemBinding" : 
+						{
 							"itemLabel" : "desc",
 							"itemKey" : "key",
 							"bindingPath" : "/items",
 							"serviceUrl":"com/incture/data/location.json",
 							"model" : "locationModel"
 						},
-						"events" : [ {
-
+						"events" : 
+						[
+						{
 							"type" : "onclick/onchange",
 							"businessMethod" : "",
 							"serviceUrl" : "",
@@ -209,10 +229,8 @@
 							"refDataPath" : ""
 
 						}
-						 ]
-
-					} ,
-					
+						]
+					},
 					{
 						"type" : "select",
 						"id":"idSelect2",
@@ -232,15 +250,17 @@
 						"valueType" : "",
 						"className" : "",
 						"formatter" : "",
-						"itemBinding" : {
+						"itemBinding" : 
+						{
 							"itemLabel" : "desc",
 							"itemKey" : "key",
 							"bindingPath" : "/items",
 							"model" : "locationModel",
 							"serviceUrl":"com/incture/data/location.json"
 						},
-						"events" : [ {
-
+						"events" : 
+						[ 
+						{
 							"type" : "onclick/onchange",
 							"businessMethod" : "",
 							"serviceUrl" : "",
@@ -248,11 +268,9 @@
 							"dataObject" : "",
 							"refElement" : "",
 							"refDataPath" : ""
-
 						}
-						 ]
-
-					} ,
+						]
+					},
 					{
 						"type" : "datepicker",
 						"label" : "Office",
@@ -276,15 +294,17 @@
 						"valueType" : "",
 						"className" : "",
 						"formatter" : "",
-						"itemBinding" : {
+						"itemBinding" : 
+						{
 							"itemLabel" : "desc",
 							"itemKey" : "key",
 							"bindingPath" : "/items",
 							"serviceUrl":"com/incture/data/location.json",
 							"model" : "locationModel"
 						},
-						"events" : [ {
-
+						"events" : 
+						[ 
+						{
 							"type" : "onclick/onchange",
 							"businessMethod" : "",
 							"serviceUrl" : "",
@@ -294,86 +314,99 @@
 							"refDataPath" : ""
 
 						}
-						 ]
-
-					}],
-					"actions" : [
-								  {
-                                   "type": "button",
-                                   "label": "Save",
-                                   "tooltip": "",
-                                   "visible": "true",
-                                   "serviceUrl": "http://jsonplaceholder.typicode.com/posts/1",
-                                   "serviceMethod": "get",
-                                   "screenRef": "",
-                                   "icon":"",
-                                   "targetAction":"Message",
-                                   "targetControl": {
-                                   		"targetScreenId":"detailScreen1",
-                                   		"targetDataPath": "",
-                                   		"targetDataBind": "",
-                                   		"model": ""
-                                  		}
-                                  },
-                                  {
-                                   "type": "button",
-                                   "label": "Delete",
-                                   "tooltip": "",
-                                   "visible": "true",
-                                   "serviceUrl": "",
-                                   "serviceMethod": "post",
-                                   "screenRef": "",
-                                   "icon":"",
-                                   "targetAction":"Message",
-                                   "targetControl": {
-                                   		"targetScreenId":"",
-                                   		"targetDataPath": "",
-                                   		"targetDataBind": "",
-                                   		"model": ""
-                                  		}
-                                  },
-                                  {
-                                   "type": "button",
-                                   "label": "Cancel",
-                                   "tooltip": "",
-                                   "visible": "true",
-                                   "serviceUrl": "",
-                                   "serviceMethod": "post",
-                                   "screenRef": "",
-                                   "icon":"",
-                                   "targetAction":"Message",
-                                   "targetControl": {
-                                   		"targetScreenId":"",
-                                   		"targetDataPath": "",
-                                   		"targetDataBind": "",
-                                   		"model": ""
-                                  		}
-                                  }
-                                ]
-
-				} ]
-			} ]
+						]
+					}
+					],
+					"actions" : 
+					[
+					{
+                        "type": "button",
+                        "label": "Save",
+                        "tooltip": "",
+                        "visible": "true",
+                        "serviceUrl": "http://jsonplaceholder.typicode.com/posts/1",
+                        "serviceMethod": "get",
+                        "screenRef": "",
+                        "icon":"",
+                        "targetAction":"Message",
+                        "targetControl": 
+						{
+                            "targetScreenId":"detailScreen1",
+                            "targetDataPath": "",
+                            "targetDataBind": "",
+                            "model": ""
+                        }
+                    },
+                    {
+                        "type": "button",
+                        "label": "Delete",
+                        "tooltip": "",
+                        "visible": "true",
+                        "serviceUrl": "",
+                        "serviceMethod": "post",
+                        "screenRef": "",
+                        "icon":"",
+                        "targetAction":"Message",
+                        "targetControl": 
+						{
+                            "targetScreenId":"",
+                            "targetDataPath": "",
+                            "targetDataBind": "",
+                            "model": ""
+                        }
+                    },
+                    {
+                        "type": "button",
+                        "label": "Cancel",
+                        "tooltip": "",
+                        "visible": "true",
+                        "serviceUrl": "",
+                        "serviceMethod": "post",
+                        "screenRef": "",
+                        "icon":"",
+                        "targetAction":"Message",
+                        "targetControl": 
+						{
+                            "targetScreenId":"",
+                            "targetDataPath": "",
+                            "targetDataBind": "",
+                            "model": ""
+                        }
+                    }
+                    ]
+				} 
+				]
+			} 
+			]
 		},
 		{
-				"id": "detailScreen1",
-                "type": "Normal",
-                "title": "Detail Title",
-                "navBack":"true",
-                "navUrl": "",
-                "width": "",
-                "height": "",
-                "default": "",
-                "events": [{
-                    "init": ""
-                }],
-				"layouts":[{
-				"controls" : [ {
-
+			"id": "detailScreen1",
+            "type": "Normal",
+            "title": "Detail Title",
+            "navBack":"true",
+            "navUrl": "",
+            "width": "",
+            "height": "",
+            "default": "",
+            "events": 
+			[
+			{
+                "init": ""
+            }
+			],
+			"layouts":
+			[
+			{
+				"controls" : 
+				[
+				{
 					"type" : "Form",
 					"id" : "idDetailForm",
 					"model" : "idDetailForm",
 					"className" : "",
-					"elements" : [ {
+					"elements" : 
+					[
+					{
 						"type" : "input",
 						"label" : "Name",
 						"placeholder" : "your name",
@@ -386,18 +419,21 @@
 						"width" : "100%",
 						"visible" : "true",
 						"enable" : "true",
+						"editable":"true",
 						"defaultValue" : "",
 						"valueType" : "",
 						"className" : "",
 						"formatter" : "",
-						"itemBinding" : {
+						"itemBinding" : 
+						{
 							"itemLabel" : "",
 							"itemKey" : "",
 							"bindingPath" : "",
 							"model" : ""
 						},
-						"events" : [ {
-
+						"events" :
+						[ 
+						{
 							"type" : "onclick/onchange",
 							"businessMethod" : "",
 							"serviceUrl" : "",
@@ -406,10 +442,10 @@
 							"refElement" : "",
 							"refDataPath" : ""
 
-						} ]
-
+						} 
+						]
 					},
-					 {
+					{
 						"type" : "input",
 						"label" : "Age",
 						"placeholder" : "your age",
@@ -422,18 +458,21 @@
 						"width" : "100%",
 						"visible" : "true",
 						"enable" : "true",
+						"editable":"true",
 						"defaultValue" : "",
 						"valueType" : "",
 						"className" : "",
 						"formatter" : "",
-						"itemBinding" : {
+						"itemBinding" : 
+						{
 							"itemLabel" : "",
 							"itemKey" : "",
 							"bindingPath" : "",
 							"model" : ""
 						},
-						"events" : [ {
-
+						"events" : 
+						[
+						{
 							"type" : "onclick/onchange",
 							"businessMethod" : "",
 							"serviceUrl" : "",
@@ -442,10 +481,10 @@
 							"refElement" : "",
 							"refDataPath" : ""
 
-						} ]
-
-					} ,
-					 {
+						}
+						]
+					},
+					{
 						"type" : "input",
 						"label" : "Company",
 						"placeholder" : "your company",
@@ -458,18 +497,21 @@
 						"width" : "100%",
 						"visible" : "true",
 						"enable" : "true",
+						"editable":"true",
 						"defaultValue" : "",
 						"valueType" : "",
 						"className" : "",
 						"formatter" : "",
-						"itemBinding" : {
+						"itemBinding" : 
+						{
 							"itemLabel" : "",
 							"itemKey" : "",
 							"bindingPath" : "",
 							"model" : ""
 						},
-						"events" : [ {
-
+						"events" : 
+						[
+						{
 							"type" : "onclick/onchange",
 							"businessMethod" : "",
 							"serviceUrl" : "",
@@ -478,53 +520,56 @@
 							"refElement" : "",
 							"refDataPath" : ""
 
-						} ]
-
-					}],
-					"actions" : [
-								  {
-                                   "type": "button",
-                                   "label": "Save",
-                                   "tooltip": "",
-                                   "visible": "true",
-                                   "serviceUrl": "http://jsonplaceholder.typicode.com/posts/1",
-                                   "serviceMethod": "get",
-                                   "screenRef": "",
-                                   "icon":"",
-                                   "targetAction":"Message",
-                                   "targetControl": {
-                                   		"targetScreenId":"",
-                                   		"targetDataPath": "",
-                                   		"targetDataBind": "",
-                                   		"model": ""
-                                  		}
-                                  },
-                                  {
-                                   "type": "button",
-                                   "label": "Cancel",
-                                   "tooltip": "",
-                                   "visible": "true",
-                                   "serviceUrl": "",
-                                   "serviceMethod": "post",
-                                   "screenRef": "",
-                                   "icon":"",
-                                   "targetAction":"Message",
-                                   "targetControl": {
-                                   		"targetScreenId":"",
-                                   		"targetDataPath": "",
-                                   		"targetDataBind": "",
-                                   		"model": ""
-                                  		}
-                                  }
-                                ]
-
-				} ]
-			} ]
+						} 
+						]
+					}
+					],
+					"actions" :
+					[
+					{
+                        "type": "button",
+                        "label": "Save",
+                        "tooltip": "",
+                        "visible": "true",
+                        "serviceUrl": "http://jsonplaceholder.typicode.com/posts/1",
+                        "serviceMethod": "get",
+                        "screenRef": "",
+                        "icon":"",
+                        "targetAction":"Message",
+                        "targetControl": 
+						{
+                            "targetScreenId":"",
+                            "targetDataPath": "",
+                            "targetDataBind": "",
+                            "model": ""
+                      	}
+                    },                      
+                    {
+                        "type": "button",
+                        "label": "Cancel",
+                        "tooltip": "",
+                        "visible": "true",
+                        "serviceUrl": "",
+                        "serviceMethod": "post",
+                        "screenRef": "",
+                        "icon":"",
+                        "targetAction":"Message",
+                        "targetControl": 
+						{
+                            "targetScreenId":"",
+                            "targetDataPath": "",
+                            "targetDataBind": "",
+                            "model": ""
+                        }
+                    }
+                    ]
+				} 
+				]
+			} 
+			]
 		}
-
 		]
-
-		}
 	}
+}
 
 		
