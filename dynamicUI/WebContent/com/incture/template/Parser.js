@@ -66,7 +66,14 @@ com.incture.template.Parser = {
 			default: returnScreen = this.fnCreatePage(screenElement);
 					 sap.ui.getCore().byId(sap.ui.getCore().getModel("applicationModel").getProperty('/applicationId')).addPage(returnScreen);
 					 Path.map("#/"+returnScreen.getId()).to(function(){
-							sap.ui.getCore().byId(sap.ui.getCore().getModel("applicationModel").getProperty('/applicationId')).to(returnScreen.getId());
+						 sap.ui.getCore().byId(returnScreen.getId()).addEventDelegate({
+							    onBeforeShow: function(evt) {
+							    	
+							        var dataObjectToTransfer = evt.data;
+							    }
+							});
+						 
+						 sap.ui.getCore().byId(sap.ui.getCore().getModel("applicationModel").getProperty('/applicationId')).to(returnScreen.getId(),"slide",{object:"my object"});
 						});
 
 			break;
@@ -109,6 +116,7 @@ com.incture.template.Parser = {
 				com.incture.template.router.setHash("");
 			}, this ]
 		});
+		
 		return page;
 	},
 	
