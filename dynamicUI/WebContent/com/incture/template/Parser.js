@@ -227,10 +227,13 @@ fnCreatePopUp :function(controlData){
 			content.push(oControl);
 			var actionData=[];
 			actionData.push(new sap.m.ToolbarSpacer({}));
-			for(var actionInc=0 ; actionInc< oActionControl.length; actionInc++){
-				actionData.push(oActionControl[actionInc]);
-				//oControl.addContent(oActionControl[actionInc]);
+			if(oActionControl != undefined){
+				for(var actionInc=0 ; actionInc< oActionControl.length; actionInc++){
+					actionData.push(oActionControl[actionInc]);
+					//oControl.addContent(oActionControl[actionInc]);
+				}
 			}
+			
 			actionData.push(new sap.m.ToolbarSpacer({width:"10%"}));
 			var actionBar = this.fnCreateToolBar(actionData);
 			content.push(actionBar);
@@ -239,8 +242,16 @@ fnCreatePopUp :function(controlData){
 		return content;
 	},
 	
-	fnParseControl : function(controlData, parentControl) {
+	/**
+	 * parameter : bTable - using this we will decide whether to check Type property or template property ( for table)
+	 */
+	fnParseControl : function(controlData, parentControl, bTableElement) {
+		
 		var controlType = controlData.type;
+		if(bTableElement){
+			controlType = controlData.colTemplateType;
+		}
+		
 		if(controlType!==undefined){
 			controlType = controlType.toLowerCase();
 		}
@@ -262,7 +273,7 @@ fnCreatePopUp :function(controlData){
 			oReturnControl = this.fnCreateTextArea(controlData,parentControl);
 			break;
 		case "text":
-			oReturnControl = this.fnCreateText(controlData,parentControl);
+			oReturnControl = this.fnCreateText(controlData,parentControl,bTableElement);
 			break;
 		case "form":
 			var bMobileEnabled = sap.ui.getCore().getModel('applicationModel').getProperty('/mobile');
@@ -270,7 +281,7 @@ fnCreatePopUp :function(controlData){
 				oReturnControl = this.fnCreateGrid(controlData,parentControl);
 			}
 			else{
-				oReturnControl = this.fnCreateMaxrixLayout(controlData,parentControl);
+				oReturnControl = this.fnCreateMatrixLayout(controlData,parentControl);
 			}
 			break;
 		case "select":
@@ -282,6 +293,9 @@ fnCreatePopUp :function(controlData){
 			break;
 		case "link":
 			oReturnControl = this.fnCreateLink(controlData, parentControl);
+			break;
+		case "table":
+			oReturnControl = this.fnCreateTable(controlData, parentControl);
 			break;
 		default:
 			break;
@@ -353,20 +367,27 @@ fnCreatePopUp :function(controlData){
 			content : aFormContents
 		});
 		
+		var sModelName = controlData.id+"_model";
+		sap.ui.getCore().getModel('applicationModel').getProperty('/modelNames').push(sModelName);
 		return oGrid;
 	},
-	
-	fnCreateMaxrixLayout:function(controlData,parentControl){
+	//3rd parameter - tells the parser that we are creating a form for table
+	fnCreateMatrixLayout:function(controlData,parentControl,bTableForm){
 		
 		var oRow = undefined; 
 		var aRows = [];
 		var oFormElements = controlData.elements;
+		var sFormId = controlData.id;
+		if(bTableForm){
+			 oFormElements = controlData;
+			 sFormId = parentControl.id+"_formId";
+		}
 		var isLabelRequired = true;
 		
 		for (var elementInc = 0; elementInc < oFormElements.length; elementInc++) {
 			if(oRow == undefined || oRow.getCells().length % 6 == 0){
 				oRow = new sap.ui.commons.layout.MatrixLayoutRow({});
-				aRows.push(oRow)
+				aRows.push(oRow);
 			}
 			var element = oFormElements[elementInc];
 			var oControl = this.fnParseControl(element,controlData);
@@ -451,7 +472,7 @@ fnCreatePopUp :function(controlData){
 		
 		var oLayout = new sap.ui.commons.layout.MatrixLayout(
 				{
-					id:controlData.id,
+					id:sFormId,
 					visible : true, // boolean
 					width : undefined, // sap.ui.core.CSSSize
 					height : undefined, // sap.ui.core.CSSSize
@@ -462,7 +483,8 @@ fnCreatePopUp :function(controlData){
 					rows : aRows
 				// sap.ui.commons.layout.MatrixLayoutRow
 				});
-		
+		var sModelName = sFormId+"_model";
+		sap.ui.getCore().getModel('applicationModel').getProperty('/modelNames').push(sModelName);
 		return oLayout;
 	},
 	/**Function to generate form control **/
@@ -522,13 +544,13 @@ fnCreatePopUp :function(controlData){
 		if(bMobileEnabled){
 			 oInput = new sap.m.Input({
 				id:controlData.id,
-				visible :(controlData.visible === "true"), // boolean
+				visible : Boolean(controlData.visible), // boolean
 				value : "{" + parentModel + ">/"+controlData.bindingName + "}", // string
 				width : controlData.width, // sap.ui.core.CSSSize
-				enabled :(controlData.enable === "true"), // boolean
+				enabled :Boolean( controlData.enable), // boolean
 				placeholder : controlData.placeholder, // string
 				styleClass:controlData.className,
-				editable : (controlData.editable === "true"), // boolean, since 1.12.0
+				editable : Boolean(controlData.editable), // boolean, since 1.12.0
 				type : sap.m.InputType.Text, // sap.m.InputType
 				maxLength : Number.parseInt(controlData.maxlength), // int
 				dateFormat : "YYYY-MM-dd", // string
@@ -563,10 +585,10 @@ fnCreatePopUp :function(controlData){
 			
 			oInput = new sap.ui.commons.TextField({
 				id : controlData.id, // sap.ui.core.ID
-				visible : (controlData.visible === "true"), // boolean
+				visible :  Boolean(controlData.visible), // boolean
 				value : "{" + parentModel + ">/"+controlData.bindingName + "}", // string
-				enabled : (controlData.enable === "true"), // boolean
-				editable : (controlData.editable === "true"), // boolean
+				enabled : Boolean(controlData.enable), // boolean
+				editable : Boolean(controlData.editable), // boolean
 				required : false, // boolean
 				width : controlData.width, // sap.ui.core.CSSSize
 				maxLength : Number.parseInt(controlData.maxlength), // int
@@ -596,12 +618,12 @@ fnCreatePopUp :function(controlData){
 		if(bMobileEnabled){
 			 oLabel = new sap.m.Label({
 				styleClass:controlData.className,
-				visible : (controlData.visible === "true"), // boolean
+				visible : Boolean(controlData.visible), // boolean
 				design : sap.m.LabelDesign.Standard, // sap.m.LabelDesign
 				text : controlData.label, // string
 				textAlign : alignment, // sap.ui.core.TextAlign
 				width : "100%", // sap.ui.core.CSSSize
-				required :(controlData.mandatory === "true"), // boolean
+				required : Boolean(controlData.mandatory), // boolean
 				tooltip : controlData.tooltip, // sap.ui.core.TooltipBase
 				labelFor : controlData.id
 			});
@@ -609,14 +631,14 @@ fnCreatePopUp :function(controlData){
 		else{
 			
 			oLabel = new sap.ui.commons.Label({
-				visible : (controlData.visible === "true"), // boolean
+				visible :  Boolean(controlData.visible), // boolean
 				design : sap.ui.commons.LabelDesign.Standard, // sap.ui.commons.LabelDesign
 				wrapping : false, // boolean
 				width : "100%", // sap.ui.core.CSSSize
 				text : controlData.label, // string
 				icon : undefined, // sap.ui.core.URI
 				textAlign : alignment, // sap.ui.core.TextAlign
-				required : (controlData.mandatory === "true"), // boolean, since 1.11.0
+				required : Boolean(controlData.mandatory), // boolean, since 1.11.0
 				requiredAtBegin : undefined, // boolean, since 1.14.0
 				tooltip : controlData.tooltip, // sap.ui.core.TooltipBase
 				labelFor :  controlData.id
@@ -629,131 +651,279 @@ fnCreatePopUp :function(controlData){
 	},
 	
 	/**Function to generate table control **/
-	getTable : function() {
-		var template = new sap.m.ColumnListItem({
-			busy : false,
-			busyIndicatorDelay : 1000,
-			visible : true,
-			type : sap.m.ListType.Inactive,
-			visible : true,
-			unread : false,
-			selected : false,
-			counter : undefined,
-			tooltip : undefined,
-			cells : [ new sap.m.Text({
-				text : "{defaultModel>name}"
-			}), new sap.m.Text({
-				text : "{defaultModel>DOB}"
-			}), new sap.m.Text({
-				text : "{defaultModel>designation}"
-			}) ],
-			tap : [ function(oEvent) {
-				var control = oEvent.getSource();
-			}, this ],
-			detailTap : [ function(oEvent) {
-				var control = oEvent.getSource();
-			}, this ],
-			press : [ function(oEvent) {
-				var control = oEvent.getSource();
-			}, this ],
-			detailPress : [ function(oEvent) {
-				var control = oEvent.getSource();
-			}, this ]
-		});
-
-		//create table 
-		var table = new sap.m.Table({
-			id : "tableID",
-			busy : false,
-			busyIndicatorDelay : 1000,
-			visible : true,
-			inset : false,
-			headerText : "header",
-			headerDesign : sap.m.ListHeaderDesign.Standard,
-			footerText : undefined,
-			mode : sap.m.ListMode.None,
-			width : "100%",
-			includeItemInSelection : false,
-			showUnread : false,
-			noDataText : undefined,
-			showNoData : true,
-			enableBusyIndicator : true,
-			modeAnimationOn : true,
-			showSeparators : sap.m.ListSeparators.All,
-			swipeDirection : sap.m.SwipeDirection.Both,
-			growing : false,
-			growingThreshold : 20,
-			growingTriggerText : undefined,
-			growingScrollToLoad : false,
-			rememberSelections : true,
-			backgroundDesign : sap.m.BackgroundDesign.Translucent,
-			fixedLayout : true,
-			showOverlay : false,
-			tooltip : undefined,
-			items : [],
-			swipeContent : undefined,
-			headerToolbar : new sap.m.Toolbar({}),
-			infoToolbar : undefined,
-			columns : [ new sap.m.Column({
-				width : undefined,
-				hAlign : sap.ui.core.TextAlign.Begin,
-				vAlign : sap.ui.core.VerticalAlign.Inherit,
-				styleClass : undefined,
+	fnCreateTable : function(controlData,parentControl) {
+		var table=undefined;
+		var sModelName = controlData.id+"_model";
+		sap.ui.getCore().getModel('applicationModel').getProperty('/modelNames').push(sModelName);
+		
+		var bMobileEnabled = sap.ui.getCore().getModel('applicationModel').getProperty('/mobile');
+		if(bMobileEnabled){
+			var template = new sap.m.ColumnListItem({
+				busy : false,
+				busyIndicatorDelay : 1000,
 				visible : true,
-				minScreenWidth : "",
-				demandPopin : false,
-				popinHAlign : sap.ui.core.TextAlign.Begin,
-				popinDisplay : sap.m.PopinDisplay.Block,
-				mergeDuplicates : false,
-				mergeFunctionName : "getText",
+				type : sap.m.ListType.Inactive,
+				visible : true,
+				unread : false,
+				selected : false,
+				counter : undefined,
 				tooltip : undefined,
-				header : new sap.m.Text({
-					text : "Name"
-				}),
-				footer : undefined
-			}), new sap.m.Column({
-				header : new sap.m.Text({
-					text : "DOB"
-				}),
-			}), new sap.m.Column({
-				header : new sap.m.Text({
-					text : "Designation"
-				}),
-			}), ],
-			select : [ function(oEvent) {
-				var control = oEvent.getSource();
-			}, this ],
-			selectionChange : [ function(oEvent) {
-				var control = oEvent.getSource();
-			}, this ],
-			"delete" : [ function(oEvent) {
-				var control = oEvent.getSource();
-			}, this ],
-			swipe : [ function(oEvent) {
-				var control = oEvent.getSource();
-			}, this ],
-			growingStarted : [ function(oEvent) {
-				var control = oEvent.getSource();
-			}, this ],
-			growingFinished : [ function(oEvent) {
-				var control = oEvent.getSource();
-			}, this ],
-			updateStarted : [ function(oEvent) {
-				var control = oEvent.getSource();
-			}, this ],
-			updateFinished : [ function(oEvent) {
-				var control = oEvent.getSource();
-			}, this ],
-			itemPress : [ function(oEvent) {
-				var control = oEvent.getSource();
-			}, this ]
-		});
+				cells : [ new sap.m.Text({
+					text : "{defaultModel>name}"
+				}), new sap.m.Text({
+					text : "{defaultModel>DOB}"
+				}), new sap.m.Text({
+					text : "{defaultModel>designation}"
+				}) ],
+				tap : [ function(oEvent) {
+					var control = oEvent.getSource();
+				}, this ],
+				detailTap : [ function(oEvent) {
+					var control = oEvent.getSource();
+				}, this ],
+				press : [ function(oEvent) {
+					var control = oEvent.getSource();
+				}, this ],
+				detailPress : [ function(oEvent) {
+					var control = oEvent.getSource();
+				}, this ]
+			});
 
-		//set model for the table and bind template
+			//create table 
+			var table = new sap.m.Table({
+				id : "tableID",
+				busy : false,
+				busyIndicatorDelay : 1000,
+				visible : true,
+				inset : false,
+				headerText : "header",
+				headerDesign : sap.m.ListHeaderDesign.Standard,
+				footerText : undefined,
+				mode : sap.m.ListMode.None,
+				width : "100%",
+				includeItemInSelection : false,
+				showUnread : false,
+				noDataText : undefined,
+				showNoData : true,
+				enableBusyIndicator : true,
+				modeAnimationOn : true,
+				showSeparators : sap.m.ListSeparators.All,
+				swipeDirection : sap.m.SwipeDirection.Both,
+				growing : false,
+				growingThreshold : 20,
+				growingTriggerText : undefined,
+				growingScrollToLoad : false,
+				rememberSelections : true,
+				backgroundDesign : sap.m.BackgroundDesign.Translucent,
+				fixedLayout : true,
+				showOverlay : false,
+				tooltip : undefined,
+				items : [],
+				swipeContent : undefined,
+				headerToolbar : new sap.m.Toolbar({}),
+				infoToolbar : undefined,
+				columns : [ new sap.m.Column({
+					width : undefined,
+					hAlign : sap.ui.core.TextAlign.Begin,
+					vAlign : sap.ui.core.VerticalAlign.Inherit,
+					styleClass : undefined,
+					visible : true,
+					minScreenWidth : "",
+					demandPopin : false,
+					popinHAlign : sap.ui.core.TextAlign.Begin,
+					popinDisplay : sap.m.PopinDisplay.Block,
+					mergeDuplicates : false,
+					mergeFunctionName : "getText",
+					tooltip : undefined,
+					header : new sap.m.Text({
+						text : "Name"
+					}),
+					footer : undefined
+				}), new sap.m.Column({
+					header : new sap.m.Text({
+						text : "DOB"
+					}),
+				}), new sap.m.Column({
+					header : new sap.m.Text({
+						text : "Designation"
+					}),
+				}), ],
+				select : [ function(oEvent) {
+					var control = oEvent.getSource();
+				}, this ],
+				selectionChange : [ function(oEvent) {
+					var control = oEvent.getSource();
+				}, this ],
+				"delete" : [ function(oEvent) {
+					var control = oEvent.getSource();
+				}, this ],
+				swipe : [ function(oEvent) {
+					var control = oEvent.getSource();
+				}, this ],
+				growingStarted : [ function(oEvent) {
+					var control = oEvent.getSource();
+				}, this ],
+				growingFinished : [ function(oEvent) {
+					var control = oEvent.getSource();
+				}, this ],
+				updateStarted : [ function(oEvent) {
+					var control = oEvent.getSource();
+				}, this ],
+				updateFinished : [ function(oEvent) {
+					var control = oEvent.getSource();
+				}, this ],
+				itemPress : [ function(oEvent) {
+					var control = oEvent.getSource();
+				}, this ]
+			});
 
-		table.bindAggregation("items", "defaultModel>/results", template);
+			//set model for the table and bind template
+			table.bindAggregation("items", "defaultModel>/results", template);
+		}
+		else{
+			
+			var aColumns =[];
+			var tableColumns = controlData.columns;
+			var oLayout  = undefined;
+			for (var columnInc = 0; columnInc < tableColumns.length; columnInc++) {
+				var arrayElement = tableColumns[columnInc];
+				var oColumn = this.fnCreateColumn(arrayElement,controlData)
+				aColumns.push(oColumn);
+				
+			}
+			//3rd parameter - tells the parser that we are creating a form for table
+			oLayout = this.fnCreateMatrixLayout(controlData.columns, controlData,true);
+			
+			var selectionMode = controlData.multiSelect == 'true' ? sap.ui.table.SelectionMode.Multi : sap.ui.table.SelectionMode.Single;
+			var navigationMode = controlData.multiSelect == "true" ? sap.ui.table.NavigationMode.Paginator : sap.ui.table.NavigationMode.Scrollbar;
+			
+			var table = new sap.ui.table.Table({
+				id : controlData.id, // sap.ui.core.ID
+				visible : controlData.visible == "true" ? true:false, // boolean
+				width : controlData.width, // sap.ui.core.CSSSize
+				rowHeight : undefined, // int
+				columnHeaderHeight : undefined, // int
+				columnHeaderVisible : true, // boolean
+				visibleRowCount : Number.parseInt(controlData.visibleRows), // int
+				firstVisibleRow : 0, // int
+				selectionMode : selectionMode, // sap.ui.table.SelectionMode
+				selectionBehavior : sap.ui.table.SelectionBehavior.RowSelector, // sap.ui.table.SelectionBehavior
+				selectedIndex : -1, // int
+				allowColumnReordering : true, // boolean
+				editable : true, // boolean
+				navigationMode : navigationMode, // sap.ui.table.NavigationMode
+				threshold : 100, // int
+				enableColumnReordering : true, // boolean
+				enableGrouping : false, // boolean
+				showColumnVisibilityMenu : false, // boolean
+				showNoData : true, // boolean
+				visibleRowCountMode : sap.ui.table.VisibleRowCountMode.Fixed, // sap.ui.table.VisibleRowCountMode, since 1.9.2
+				fixedColumnCount : Number.parseInt(controlData.fixedCols), // int
+				fixedRowCount : 0, // int
+				minAutoRowCount : 5, // int
+				fixedBottomRowCount : 0, // int, since 1.18.7
+				enableColumnFreeze : false, // boolean, since 1.21.0
+				enableCellFilter : false, // boolean, since 1.21.0
+				noDataText : controlData.noDataText, // string, since 1.21.0
+				showOverlay : false, // boolean, since 1.21.2
+				enableSelectAll : true, // boolean, since 1.23.0
+				enableCustomFilter : false, // boolean, since 1.23.0
+				enableBusyIndicator : false, // boolean, since 1.27.0
+				tooltip : undefined, // sap.ui.core.TooltipBase
+				title : controlData.title, // sap.ui.core.Control
+				footer : undefined, // sap.ui.core.Control
+				toolbar : undefined, // sap.ui.core.Toolbar
+				extension : [], // sap.ui.core.Control
+				columns : aColumns, // sap.ui.table.Column
+				rows : [], // sap.ui.table.Row
+				noData : undefined, // sap.ui.core.Control
+				rowSelectionChange : [ function(oEvent) {
+					var control = oEvent.getSource();
+				}, this ],
+				columnSelect : [ function(oEvent) {
+					var control = oEvent.getSource();
+				}, this ],
+				columnResize : [ function(oEvent) {
+					var control = oEvent.getSource();
+				}, this ],
+				columnMove : [ function(oEvent) {
+					var control = oEvent.getSource();
+				}, this ],
+				sort : [ function(oEvent) {
+					var control = oEvent.getSource();
+				}, this ],
+				filter : [ function(oEvent) {
+					var control = oEvent.getSource();
+				}, this ],
+				group : [ function(oEvent) {
+					var control = oEvent.getSource();
+				}, this ],
+				columnVisibility : [ function(oEvent) {
+					var control = oEvent.getSource();
+				}, this ],
+				cellClick : [ function(oEvent) {
+					var control = oEvent.getSource();
+				}, this ], // since 1.21.0
+				cellContextmenu : [ function(oEvent) {
+					var control = oEvent.getSource();
+				}, this ], // since 1.21.0
+				columnFreeze : [ function(oEvent) {
+					var control = oEvent.getSource();
+				}, this ], // since 1.21.0
+				customFilter : [ function(oEvent) {
+					var control = oEvent.getSource();
+				}, this ]
+			// since 1.23.0
+			});
+			
+			table.bindRows(sModelName+">"+controlData.bindingName);
+			
+		}
+		
+		
 
 		return table;
+	},
+	
+	fnCreateColumn:function(controlData,parentControl){
+		
+		var oColumn = undefined;
+		var bMobileEnabled = sap.ui.getCore().getModel('applicationModel').getProperty('/mobile');
+		if(bMobileEnabled){
+			
+		}
+		else{
+			
+			var oColumnTemplate = this.fnParseControl(controlData,parentControl,true);
+			oColumn = new sap.ui.table.Column({
+				width : controlData.colWidth, // sap.ui.core.CSSSize
+				flexible : true, // boolean
+				resizable : true, // boolean
+				hAlign : sap.ui.core.HorizontalAlign.Begin, // sap.ui.core.HorizontalAlign
+				sorted : false, // boolean
+				sortOrder : sap.ui.table.SortOrder.Ascending, // sap.ui.table.SortOrder
+				sortProperty : undefined, // string
+				filtered : false, // boolean
+				filterProperty : undefined, // string
+				filterValue : undefined, // string
+				filterOperator : undefined, // string
+				grouped : false, // boolean
+				visible : true, // boolean
+				filterType : undefined, // any, since 1.9.2
+				name : undefined, // string, since 1.11.1
+				showFilterMenuEntry : true, // boolean, since 1.13.0
+				showSortMenuEntry : true, // boolean, since 1.13.0
+				headerSpan : 1, // any
+				autoResizable : false, // boolean, since 1.21.1
+				defaultFilterOperator : undefined, // string
+				tooltip : undefined, // sap.ui.core.TooltipBase
+				label : controlData.colLabel, // sap.ui.core.Control
+				multiLabels : [], // sap.ui.core.Control, since 1.13.1
+				template : oColumnTemplate, // sap.ui.core.Control
+			// sap.ui.unified.Menu
+			});
+		}
+		return oColumn;
 	},
 
 	/**Function to create and return tool bar **/
@@ -803,9 +973,9 @@ fnCreatePopUp :function(controlData){
 		if(bMobileEnabled){
 			 oSelect = new sap.m.Select({
 				id:controlData.id,
-				visible : (controlData.visible === "true"), // boolean
-				enabled : (controlData.enable === "true"), // boolean
-				editable : (controlData.editable === "true"), // boolean
+				visible : Boolean(controlData.visible), // boolean
+				enabled : Boolean(controlData.enable), // boolean
+				editable : Boolean(controlData.editable), // boolean
 				width : controlData.width, // sap.ui.core.CSSSize
 				maxWidth : "100%", // sap.ui.core.CSSSize
 				selectedKey : "{"+parentModel+">/"+controlData.bindingName+"}", // string, since 1.11
@@ -833,10 +1003,10 @@ fnCreatePopUp :function(controlData){
 		else{
 			oSelect = new sap.ui.commons.DropdownBox({
 				id : controlData.id, // sap.ui.core.ID
-				visible : (controlData.visible === "true"), // boolean
+				visible : Boolean(controlData.visible), // boolean
 				value : "", // string
-				enabled : (controlData.enable === "true"), // boolean
-				editable : (controlData.editable === "true"), // boolean
+				enabled : Boolean(controlData.enable), // boolean
+				editable : Boolean(controlData.editable), // boolean
 				required : false, // boolean
 				width : controlData.width, // sap.ui.core.CSSSize
 				maxLength : 0, // int
@@ -894,12 +1064,12 @@ fnCreatePopUp :function(controlData){
 		if(bMobileEnabled){
 			 oDatePicker = new sap.m.DatePicker({
 				 id :controlData.id,
-				visible : (controlData.visible === "true"), // boolean
+				visible : Boolean(controlData.visible), // boolean
 				value :  "{"+parentModel+">/"+controlData.bindingName+"}", // string
 				width : controlData.width, // sap.ui.core.CSSSize
-				enabled : (controlData.enable === "true"), // boolean
+				enabled : Boolean(controlData.enable), // boolean
 				placeholder :  controlData.placeholder, // string
-				editable : (controlData.editable === "true"), // boolean, since 1.12.0
+				editable : Boolean(controlData.editable), // boolean, since 1.12.0
 				displayFormat : controlData.displayDateFormat, // string
 				valueFormat : controlData.valueDateFormat, // string
 				dateValue : undefined, // object
@@ -914,10 +1084,10 @@ fnCreatePopUp :function(controlData){
 //			jQuery.sap.require("sap.ui.unified");
 			oDatePicker = new sap.ui.commons.DatePicker({
 				id : controlData.id, // sap.ui.core.ID
-				visible : (controlData.visible === "true"), // boolean
+				visible : Boolean(controlData.visible), // boolean
 				value : "{"+parentModel+">/"+controlData.bindingName+"}", // string
-				enabled : (controlData.enable === "true"), // boolean
-				editable :  (controlData.editable === "true"), // boolean
+				enabled : Boolean(controlData.enable), // boolean
+				editable :  Boolean(controlData.editable), // boolean
 				required : false, // boolean
 				width : controlData.width, // sap.ui.core.CSSSize
 				maxLength : 0, // int
@@ -945,12 +1115,12 @@ fnCreatePopUp :function(controlData){
 		if(bMobileEnabled){
 			 oTextArea = new sap.m.TextArea({
 				id:controlData.id,
-				visible : (controlData.visible === "true"), // boolean
+				visible : Boolean(controlData.visible), // boolean
 				value :  "{"+parentModel+">/"+controlData.bindingName+"}", // string
 				width : controlData.width, // sap.ui.core.CSSSize
-				enabled :  (controlData.enable === "true"), // boolean
+				enabled :  Boolean(controlData.enable), // boolean
 				placeholder : controlData.placeholder, // string
-				editable :  (controlData.editable === "true"), // boolean, since 1.12.0
+				editable :  Boolean(controlData.editable), // boolean, since 1.12.0
 				rows : Number.parseInt(controlData.rows), // int
 				cols : Number.parseInt(controlData.cols), // int
 				height : undefined, // sap.ui.core.CSSSize
@@ -969,10 +1139,10 @@ fnCreatePopUp :function(controlData){
 			
 			oTextArea = new sap.ui.commons.TextArea({
 				id:controlData.id,
-				visible :  (controlData.visible === "true"), // boolean
+				visible :  Boolean(controlData.visible), // boolean
 				value : "{"+parentModel+">/"+controlData.bindingName+"}", // string
-				enabled :  (controlData.enable === "true"), // boolean
-				editable :  (controlData.editable === "true"), // boolean
+				enabled :  Boolean(controlData.enable), // boolean
+				editable :  Boolean(controlData.editable), // boolean
 				required : false, // boolean
 				width : controlData.width, // sap.ui.core.CSSSize
 				maxLength : 0, // int
@@ -1010,14 +1180,14 @@ fnCreatePopUp :function(controlData){
 		if(bMobileEnabled){
 			 oCheckBox = new sap.m.CheckBox({
 				id:controlData.id,
-				visible :  (controlData.visible === "true"), // boolean
+				visible :  Boolean(controlData.visible), // boolean
 				selected : "{"+parentModel+">/"+controlData.bindingName+"}", // boolean
-				enabled : (controlData.enable === "true"), // boolean
+				enabled : Boolean(controlData.enable), // boolean
 				name : controlData.name, // string
 				text : controlData.label, // string
 				width : controlData.width, // sap.ui.core.CSSSize
 				activeHandling : true, // boolean
-				editable : (controlData.editable === "true"), // boolean, since 1.25
+				editable : Boolean(controlData.editable), // boolean, since 1.25
 				tooltip : undefined, // sap.ui.core.TooltipBase
 				select : [ function(oEvent) {
 					var control = oEvent.getSource();
@@ -1027,11 +1197,11 @@ fnCreatePopUp :function(controlData){
 		else{
 			oCheckBox = new sap.ui.commons.CheckBox({
 				id:controlData.id, // sap.ui.core.ID
-				visible : (controlData.visible === "true"), // boolean
+				visible : Boolean(controlData.visible), // boolean
 				checked : "{"+parentModel+">/"+controlData.bindingName+"}", // boolean
 				text : controlData.label, // string
-				enabled : (controlData.enabled === "true"), // boolean
-				editable : (controlData.editable === "true"), // boolean
+				enabled : Boolean(controlData.enabled), // boolean
+				editable : Boolean(controlData.editable), // boolean
 				width : controlData.width, // sap.ui.core.CSSSize
 				textDirection : sap.ui.core.TextDirection.Inherit, // sap.ui.core.TextDirection
 				name : controlData.name, // string
@@ -1054,13 +1224,13 @@ fnCreatePopUp :function(controlData){
 		if(bMobileEnabled){
 			 oRadioButton = new sap.m.RadioButton({
 				id:controlData.id,
-				visible : (controlData.visible === "true"), // boolean
-				enabled : (controlData.enable === "true"), // boolean
+				visible : Boolean(controlData.visible), // boolean
+				enabled : Boolean(controlData.enable), // boolean
 				selected : "{"+parentModel+">/"+controlData.bindingName+"}", // boolean
 				groupName : controlData.groupName, // string
 				text : controlData.label, // string
 				width : controlData.width, // sap.ui.core.CSSSize
-				editable : (controlData.editable === "true"), // boolean, since 1.25
+				editable : Boolean(controlData.editable), // boolean, since 1.25
 				tooltip : controlData.tooltip, // sap.ui.core.TooltipBase
 				select : [ function(oEvent) {
 					var control = oEvent.getSource();
@@ -1070,10 +1240,10 @@ fnCreatePopUp :function(controlData){
 		else{
 			oRadioButton = new sap.ui.commons.RadioButton({
 				id:controlData.id, // sap.ui.core.ID
-				visible : (controlData.visible === "true"), // boolean
+				visible : Boolean(controlData.visible), // boolean
 				text : controlData.label, // string
-				enabled : (controlData.enable === "true"), // boolean
-				editable : (controlData.editable === "true"), // boolean
+				enabled : Boolean(controlData.enable), // boolean
+				editable : Boolean(controlData.editable), // boolean
 				selected : "{"+parentModel+">/"+controlData.bindingName+"}", // boolean
 				valueState : sap.ui.core.ValueState.None, // sap.ui.core.ValueState
 				width : controlData.width, // sap.ui.core.CSSSize
@@ -1092,15 +1262,24 @@ fnCreatePopUp :function(controlData){
 		return oRadioButton;
 	},
 	
-	fnCreateText:function(controlData,parentControl){
+	/*
+	 * 3rd Parameter is for relative binding
+	 */
+	fnCreateText:function(controlData,parentControl,bRelativeBinding){
+		
 		var parentModel = parentControl.id +"_model";
+		var bindingPath = "{"+parentModel+">/"+controlData.bindingName+"}";
+		if(bRelativeBinding){
+			bindingPath = "{"+parentModel+">"+controlData.bindingName+"}";
+		}
+		
 		var oText = undefined;
 		var bMobileEnabled = sap.ui.getCore().getModel('applicationModel').getProperty('/mobile');
 		if(bMobileEnabled){
 			 oText = new sap.m.Text({
 				id:controlData.id,
-				visible : (controlData.visible === "true"), // boolean
-				text : "{"+parentModel+">/"+controlData.bindingName+"}", // string
+				visible : Boolean(controlData.visible), // boolean
+				text : bindingPath, // string
 				wrapping : true, // boolean
 				textAlign : sap.ui.core.TextAlign.Begin, // sap.ui.core.TextAlign
 				width : controlData.width, // sap.ui.core.CSSSize
@@ -1110,10 +1289,10 @@ fnCreatePopUp :function(controlData){
 		}else{
 			 oText = new sap.ui.commons.TextView({
 				id:controlData.id, // sap.ui.core.ID
-				visible : (controlData.visible === "true"), // boolean
-				text : "{"+parentModel+">/"+controlData.bindingName+"}", // string
+				visible : Boolean(controlData.visible), // boolean
+				text : bindingPath, // string
 				textDirection : sap.ui.core.TextDirection.Inherit, // sap.ui.core.TextDirection
-				enabled : (controlData.enable === "true"), // boolean
+				enabled : Boolean(controlData.enable), // boolean
 				helpId : "", // string
 				accessibleRole : sap.ui.core.AccessibleRole.Document, // sap.ui.core.AccessibleRole
 				design : sap.ui.commons.TextViewDesign.Standard, // sap.ui.commons.TextViewDesign
@@ -1278,15 +1457,15 @@ fnCreatePopUp :function(controlData){
 		var bMobileEnabled = sap.ui.getCore().getModel('applicationModel').getProperty('/mobile');
 		if(bMobileEnabled){
 			oLink = new sap.m.Link({
-				visible :(actionData.visible === "true"), 
+				visible : Boolean(actionData.visible), 
 				text : actionData.label, 
-				enabled :  (actionData.enable === "true"), // boolean
+				enabled : Boolean(actionData.enabled), // boolean
 				target : undefined, // string
 				width : undefined, // sap.ui.core.CSSSize
 				href : actionData.screenRef, // sap.ui.core.URI
 				wrapping : false, // boolean
 				subtle : false, // boolean, since 1.22
-				emphasized : (actionData.emphasized === "true"), // boolean, since 1.22
+				emphasized : Boolean(actionData.emphasized), // boolean, since 1.22
 				tooltip : actionData.tooltip, // sap.ui.core.TooltipBase
 				press : [ function(oEvent) {
 					var control = oEvent.getSource();
@@ -1315,6 +1494,9 @@ fnCreatePopUp :function(controlData){
 	fnParseControlForActions : function(control){
 		var oActionControl = [];
 		var controlActions = control.actions;
+		if(controlActions  == undefined){
+			return;
+		}
 		for(var actionInc=0; actionInc< controlActions.length; actionInc++){
 			var oAction = controlActions[actionInc];
 			oActionControl.push(this.fnParseControl(oAction, control));
@@ -1360,11 +1542,9 @@ fnCreatePopUp :function(controlData){
 			case "message":  sap.m.MessageBox.confirm(
 				      	  "Success", {
 				          icon: sap.m.MessageBox.Icon.INFORMATION,
-				          title: "Information",
+				          title: "Inormation",
 				          actions: [sap.m.MessageBox.Action.OK],
-				          onClose: function(oAction) { 
-				        	  console.log("close");
-				          }
+				          onClose: function(oAction) {  }
 				      });
 			break;
 			}
