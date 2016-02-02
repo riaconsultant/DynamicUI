@@ -392,6 +392,7 @@
                     "visible": "true",
                     "noDataText": "No Data",
                     "title": "",
+                    "serviceUrl": "",
                     "bindingName": "/",
                     "columns": 
 					[
@@ -683,7 +684,7 @@
 					"search": "false",
 					"multiselect": "false",
 					"width": "",
-					"visibleRows": "10",
+					"visibleRows": "3",
 					"pagination": "true",
 					"fixedCols": "0",
 					"footer":"",
@@ -691,25 +692,187 @@
 					"visible": "true",
 					"noDataText": "",
 					"title": "TableData",
-					"serviceUrl":"com/incture/data/tableData.json",
-					"bindingName":"/results",
+					"serviceUrl":"http://services.odata.org/V4/Northwind/Northwind.svc/Employees",
+					"bindingName":"value",
 					"columns":
 					[
+                    {
+                        "colLabel": "Name",
+                        "colWidth": "50%",
+                        "colTemplateType": "Text",
+                        "colClassName": "",
+                        "colVisibile": "",
+                        "colMinScreenWidth": "",
+                        "type": "text",
+                        "label": "Name",
+                        "placeholder": "your age",
+                        "tooltip": "your age",
+                        "bindingName": "name",
+                        "model": "idForm",
+                        "labelAlignment": "left",
+                        "editable": "true",
+                        "mandatory": "true",
+                        "maxlength": "5",
+                        "width": "100%",
+                        "visible": "true",
+                        "enable": "true",
+                        "defaultValue": "",
+                        "valueType": "",
+                        "className": "",
+                        "formatter": "",
+                        "itemBinding": 
+						{
+                            "itemLabel": "",
+                            "itemKey": "",
+                            "bindingPath": "",
+                             "model": ""
+                        },
+                        "events": 
+						[
+                        {
+                            "type": "onclick/onchange",
+                            "businessMethod": "",
+                            "serviceUrl": "",
+                            "screenRef": "",
+                            "dataObject": "",
+                            "refElement": "",
+                            "refDataPath": ""
+                        }
+                        ]
+                    },
 					{
-						"templateType": "Input",
-						"label":"Name",
-						"className": "",
-						"visible": "true",
-						"minScreenWidth":""
-					},
+                        "colLabel": "City",
+                        "colWidth": "50%",
+                        "colTemplateType": "Text",
+                        "colClassName": "",
+                        "colVisibile": "",
+                        "colMinScreenWidth": "",
+                        "type": "text",
+                        "label": "City",
+                        "placeholder": "your city",
+                        "tooltip": "your city",
+                        "bindingName": "City",
+                        "model": "",
+                        "labelAlignment": "left",
+                        "editable": "true",
+                        "mandatory": "true",
+                        "maxlength": "5",
+                        "width": "100%",
+                        "visible": "true",
+                        "enable": "true",
+                        "defaultValue": "",
+                        "valueType": "",
+                        "className": "",
+                        "formatter": "",
+                        "itemBinding": 
+						{
+                            "itemLabel": "",
+                            "itemKey": "",
+                            "bindingPath": "",
+                             "model": ""
+                        },
+                        "events": 
+						[
+                        {
+                            "type": "onclick/onchange",
+                            "businessMethod": "",
+                            "serviceUrl": "",
+                            "screenRef": "",
+                            "dataObject": "",
+                            "refElement": "",
+                            "refDataPath": ""
+                        }
+                        ]
+                    },
 					{
-						"templateType": "Input",
-						"label":"Age",
-						"className": "",
-						"visible": "true",
-						"minScreenWidth":""
-					}
-					],
+                        "colLabel": "Address",
+                        "colWidth": "50%",
+                        "colTemplateType": "Text",
+                        "colClassName": "",
+                        "colVisibile": "",
+                        "colMinScreenWidth": "",
+                        "type": "text",
+                        "label": "Address",
+                        "placeholder": "Address",
+                        "tooltip": "your age",
+                        "bindingName": "Address",
+                        "model": "",
+                        "labelAlignment": "left",
+                        "editable": "true",
+                        "mandatory": "true",
+                        "maxlength": "5",
+                        "width": "100%",
+                        "visible": "true",
+                        "enable": "true",
+                        "defaultValue": "",
+                        "valueType": "",
+                        "className": "",
+                        "formatter": "",
+                        "itemBinding": 
+						{
+                            "itemLabel": "",
+                            "itemKey": "",
+                            "bindingPath": "",
+                             "model": ""
+                        },
+                        "events": 
+						[
+                        {
+                            "type": "onclick/onchange",
+                            "businessMethod": "",
+                            "serviceUrl": "",
+                            "screenRef": "",
+                            "dataObject": "",
+                            "refElement": "",
+                            "refDataPath": ""
+                        }
+                        ]
+                    },
+                    {
+                        "colLabel": "Title",
+                        "colWidth": "50%",
+                        "colTemplateType": "Text",
+                        "colClassName": "",
+                        "colVisibile": "",
+                        "colMinScreenWidth": "",
+                        "type": "Text",
+                        "label": "Age",
+                        "placeholder": "your age",
+                        "tooltip": "your age",
+                        "bindingName": "age",
+                        "model": "idForm",
+                        "labelAlignment": "left",
+                        "editable": "true",
+                        "mandatory": "true",
+                        "maxlength": "5",
+                        "width": "100%",
+                        "visible": "true",
+                        "enable": "true",
+                        "defaultValue": "",
+                        "valueType": "",
+                        "className": "",
+                        "formatter": "",
+                        "itemBinding": 
+						{
+                            "itemLabel": "",
+                            "itemKey": "",
+                            "bindingPath": "",
+                            "model": ""
+                        },
+                        "events": 
+						[
+                        {
+                            "type": "onclick/onchange",
+                            "businessMethod": "",
+                            "serviceUrl": "",
+                            "screenRef": "",
+                            "dataObject": "",
+                            "refElement": "",
+                            "refDataPath": ""
+                        }
+                        ]
+                    }
+                    ],
 					"actions":
 					[
 					]

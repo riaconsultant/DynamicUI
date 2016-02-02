@@ -656,8 +656,29 @@ fnCreatePopUp :function(controlData){
 		var sModelName = controlData.id+"_model";
 		sap.ui.getCore().getModel('applicationModel').getProperty('/modelNames').push(sModelName);
 		
+		var aColumns =[];
+		var tableColumns = controlData.columns;
+		var oLayout  = undefined;
+		for (var columnInc = 0; columnInc < tableColumns.length; columnInc++) {
+			var arrayElement = tableColumns[columnInc];
+			var oColumn = this.fnCreateColumn(arrayElement,controlData)
+			aColumns.push(oColumn);
+		}
+		
 		var bMobileEnabled = sap.ui.getCore().getModel('applicationModel').getProperty('/mobile');
 		if(bMobileEnabled){
+			this.fnGetJson(controlData.serviceUrl, null, "get", true, null, sModelName);
+			
+			//get column header 
+			var bColumns =[];
+			var columns = controlData.columns;
+			var oLayout  = undefined;
+			for (var columnInc = 0; columnInc < columns.length; columnInc++) {
+				var arrayElement = columns[columnInc];
+				var oColumn = this.fnCreateColumnHeader(arrayElement,controlData)
+				bColumns.push(oColumn);
+			}
+			
 			var template = new sap.m.ColumnListItem({
 				busy : false,
 				busyIndicatorDelay : 1000,
@@ -668,11 +689,7 @@ fnCreatePopUp :function(controlData){
 				selected : false,
 				counter : undefined,
 				tooltip : undefined,
-				cells : [ new sap.m.Text({
-					text : "{"+sModelName+">Name}"
-				}), new sap.m.Text({
-					text : "{"+sModelName+">Designation}"
-				}) ],
+				cells : aColumns,
 				tap : [ function(oEvent) {
 					var control = oEvent.getSource();
 				}, this ],
@@ -707,7 +724,7 @@ fnCreatePopUp :function(controlData){
 				modeAnimationOn : true,
 				showSeparators : sap.m.ListSeparators.All,
 				swipeDirection : sap.m.SwipeDirection.Both,
-				growing : false,
+				growing : (controlData.pagination === "true"),
 				growingThreshold : Number(controlData.visibleRows),
 				growingTriggerText : undefined,
 				growingScrollToLoad : (controlData.pagination === "true"),
@@ -720,28 +737,7 @@ fnCreatePopUp :function(controlData){
 				swipeContent : undefined,
 				headerToolbar : new sap.m.Toolbar({}),
 				infoToolbar : undefined,
-				columns : [ new sap.m.Column({
-					width : undefined,
-					hAlign : sap.ui.core.TextAlign.Begin,
-					vAlign : sap.ui.core.VerticalAlign.Inherit,
-					styleClass : undefined,
-					visible : true,
-					minScreenWidth : "",
-					demandPopin : false,
-					popinHAlign : sap.ui.core.TextAlign.Begin,
-					popinDisplay : sap.m.PopinDisplay.Block,
-					mergeDuplicates : false,
-					mergeFunctionName : "getText",
-					tooltip : undefined,
-					header : new sap.m.Text({
-						text : "Name"
-					}),
-					footer : undefined
-				}), new sap.m.Column({
-					header : new sap.m.Text({
-						text : "DOB"
-					}),
-				}) ],
+				columns : bColumns,
 				select : [ function(oEvent) {
 					var control = oEvent.getSource();
 				}, this ],
@@ -775,16 +771,6 @@ fnCreatePopUp :function(controlData){
 			table.bindAggregation("items", sModelName+">/"+controlData.bindingName, template);
 		}
 		else{
-			
-			var aColumns =[];
-			var tableColumns = controlData.columns;
-			var oLayout  = undefined;
-			for (var columnInc = 0; columnInc < tableColumns.length; columnInc++) {
-				var arrayElement = tableColumns[columnInc];
-				var oColumn = this.fnCreateColumn(arrayElement,controlData)
-				aColumns.push(oColumn);
-				
-			}
 			//3rd parameter - tells the parser that we are creating a form for table
 			oLayout = this.fnCreateMatrixLayout(controlData.columns, controlData,true);
 			
@@ -884,7 +870,7 @@ fnCreatePopUp :function(controlData){
 		var oColumn = undefined;
 		var bMobileEnabled = sap.ui.getCore().getModel('applicationModel').getProperty('/mobile');
 		if(bMobileEnabled){
-			
+			oColumn = this.fnParseControl(controlData,parentControl,true);
 		}
 		else{
 			
@@ -917,6 +903,40 @@ fnCreatePopUp :function(controlData){
 			// sap.ui.unified.Menu
 			});
 		}
+		return oColumn;
+	},
+	
+	fnCreateColumnHeader : function(controlData,parentControl){
+		var hAlign = sap.ui.core.TextAlign.Begin;
+		switch(controlData.labelAlignment){
+		case "left": hAlign = sap.ui.core.TextAlign.Left;
+		break;
+		case "right":hAlign = sap.ui.core.TextAlign.Right;
+		break;
+		case "center":hAlign = sap.ui.core.TextAlign.Center;
+		break;
+		default: hAlign = sap.ui.core.TextAlign.Begin;
+		break;
+		};
+		
+		var oColumn = new sap.m.Column({
+			width : controlData.width,
+			hAlign : hAlign,
+			vAlign : sap.ui.core.VerticalAlign.Inherit,
+			styleClass : controlData.className,
+			visible : (controlData.visible === "true"),
+			minScreenWidth : controlData.colMinScreenWidth,
+			demandPopin : false,
+			popinHAlign : sap.ui.core.TextAlign.Begin,
+			popinDisplay : sap.m.PopinDisplay.Block,
+			mergeDuplicates : false,
+			mergeFunctionName : "getText",
+			tooltip : undefined,
+			header : new sap.m.Text({
+				text : controlData.colLabel
+			}),
+			footer : undefined
+		});
 		return oColumn;
 	},
 
@@ -1509,12 +1529,20 @@ fnCreatePopUp :function(controlData){
 			  async: async,
 			  data: data,
 			  method: method,
-			  success: function(data, jqXHR, options){
-				  returnData =  data;
+			  success: function(rData, jqXHR, options){
+				  returnData =  rData;
 				  if(async){
-					  returnData = that.fnParseReturnData(data,actionData);
-					  if(model !== undefined){
-						  model.setData(data);
+					  if(!actionData && !data){
+						  if(model){
+							  var oModel = new sap.ui.model.json.JSONModel(returnData);
+							  var appId = sap.ui.getCore().getModel("applicationModel").getProperty("/applicationId");
+							  sap.ui.getCore().byId(appId).setModel(oModel,model);
+						  }
+					  }else{
+						  returnData = that.fnParseReturnData(data,actionData);
+						  if(model !== undefined){
+							  model.setData(data);
+						  }
 					  }
 				  }
 			  },
