@@ -305,11 +305,15 @@ fnCreatePopUp :function(controlData){
 		return oReturnControl;
 	},
 	
-	fnCreateGrid : function(controlData,parentControl){
+	fnCreateGrid : function(controlData,parentControl,bTableForm){
 		var oFormElements = controlData.elements;
 		var aFormContents = [];
 		var isLabelRequired = true;
-		
+		var sFormId = controlData.id;
+		if(bTableForm){
+			 oFormElements = controlData;
+			 sFormId = parentControl.id+"_formId";
+		}
 		for (var elementInc = 0; elementInc < oFormElements.length; elementInc++) {
 			var element = oFormElements[elementInc];
 			var oControl = this.fnParseControl(element,controlData);
@@ -354,7 +358,7 @@ fnCreatePopUp :function(controlData){
 		}
 		
 		var oGrid = new sap.ui.layout.Grid({
-			id:controlData.id,
+			id:sFormId,
 			visible : true, // boolean
 			width : "100%", // sap.ui.core.CSSSize
 			vSpacing : 1, // float
@@ -367,7 +371,7 @@ fnCreatePopUp :function(controlData){
 			content : aFormContents
 		});
 		
-		var sModelName = controlData.id+"_model";
+		var sModelName = sFormId+"_model";
 		sap.ui.getCore().getModel('applicationModel').getProperty('/modelNames').push(sModelName);
 		return oGrid;
 	},
@@ -655,24 +659,75 @@ fnCreatePopUp :function(controlData){
 		var table=undefined;
 		var sModelName = controlData.id+"_model";
 		sap.ui.getCore().getModel('applicationModel').getProperty('/modelNames').push(sModelName);
-		
+		var bMobileEnabled = sap.ui.getCore().getModel('applicationModel').getProperty('/mobile');
 		var aColumns =[];
 		var tableColumns = controlData.columns;
-		var oLayout  = undefined;
+		var oLayout  = undefined; 
+		
+		
+		//console.log(oDialog.getId())
+		var oToolbar = this.fnCreateToolBar();
+		
+		if(controlData.addRow === "true"){
+			
+			var oButtonData = {
+					label:"Add"
+					
+			};
+			var oAddRowButton = this.fnCreateButton(oButtonData, controlData);
+			if(bMobileEnabled){
+				oToolbar.addContent(oAddRowButton);
+			}
+			else{
+				oToolbar.addRightItem(oAddRowButton);
+			}
+			
+		}
+		
+		if(controlData.updateRow === "true"){
+					
+			var oButtonData = {
+					label:"Update"
+					
+			};
+			var oUpdateRowButton = this.fnCreateButton(oButtonData, controlData);
+			if(bMobileEnabled){
+				oToolbar.addContent(oUpdateRowButton);
+			}
+			else{
+				oToolbar.addRightItem(oUpdateRowButton);
+			}
+		}
+		if(controlData.deleteRow === "true"){
+			
+			var oButtonData = {
+					label:"Delete"
+					
+			};
+			var oDeleteRowButton = this.fnCreateButton(oButtonData, controlData);
+			if(bMobileEnabled){
+				oToolbar.addContent(oDeleteRowButton);
+			}
+			else{
+				oToolbar.addRightItem(oDeleteRowButton);
+			}
+		}
 		for (var columnInc = 0; columnInc < tableColumns.length; columnInc++) {
 			var arrayElement = tableColumns[columnInc];
 			var oColumn = this.fnCreateColumn(arrayElement,controlData)
 			aColumns.push(oColumn);
 		}
 		
-		var bMobileEnabled = sap.ui.getCore().getModel('applicationModel').getProperty('/mobile');
+		
 		if(bMobileEnabled){
 			this.fnGetJson(controlData.serviceUrl, null, "get", true, null, sModelName);
 			
+			
+			oLayout = this.fnCreateGrid(controlData.columns, controlData,true);
 			//get column header 
 			var bColumns =[];
 			var columns = controlData.columns;
-			var oLayout  = undefined;
+			
 			for (var columnInc = 0; columnInc < columns.length; columnInc++) {
 				var arrayElement = columns[columnInc];
 				var oColumn = this.fnCreateColumnHeader(arrayElement,controlData)
@@ -735,7 +790,7 @@ fnCreatePopUp :function(controlData){
 				tooltip : undefined,
 				items : [],
 				swipeContent : undefined,
-				headerToolbar : new sap.m.Toolbar({}),
+				headerToolbar : oToolbar,
 				infoToolbar : undefined,
 				columns : bColumns,
 				select : [ function(oEvent) {
@@ -812,7 +867,7 @@ fnCreatePopUp :function(controlData){
 				tooltip : undefined, // sap.ui.core.TooltipBase
 				title : controlData.title, // sap.ui.core.Control
 				footer : undefined, // sap.ui.core.Control
-				toolbar : undefined, // sap.ui.core.Toolbar
+				toolbar : oToolbar, // sap.ui.core.Toolbar
 				extension : [], // sap.ui.core.Control
 				columns : aColumns, // sap.ui.table.Column
 				rows : [], // sap.ui.table.Row
@@ -858,6 +913,20 @@ fnCreatePopUp :function(controlData){
 			
 			table.bindRows(sModelName+">"+controlData.bindingName);
 			
+		}
+		if(bMobileEnabled){
+			var oDialog = new sap.m.Dialog({
+				contentWidth:"100%",
+				contentHeight:"100%",
+				content:[oLayout]
+			});
+		}
+		else{
+			var oDialog = new sap.ui.commons.Dialog({
+				width:"100%",
+				height:"100%",
+				content:[oLayout]
+			});
 		}
 		
 		
