@@ -544,13 +544,13 @@ fnCreatePopUp :function(controlData){
 		if(bMobileEnabled){
 			 oInput = new sap.m.Input({
 				id:controlData.id,
-				visible : Boolean(controlData.visible), // boolean
+				visible : (controlData.visible === "true"), // boolean
 				value : "{" + parentModel + ">/"+controlData.bindingName + "}", // string
 				width : controlData.width, // sap.ui.core.CSSSize
-				enabled :Boolean( controlData.enable), // boolean
+				enabled :(controlData.enable === "true"), // boolean
 				placeholder : controlData.placeholder, // string
 				styleClass:controlData.className,
-				editable : Boolean(controlData.editable), // boolean, since 1.12.0
+				editable : (controlData.editable === "true"), // boolean, since 1.12.0
 				type : sap.m.InputType.Text, // sap.m.InputType
 				maxLength : Number.parseInt(controlData.maxlength), // int
 				dateFormat : "YYYY-MM-dd", // string
@@ -585,10 +585,10 @@ fnCreatePopUp :function(controlData){
 			
 			oInput = new sap.ui.commons.TextField({
 				id : controlData.id, // sap.ui.core.ID
-				visible :  Boolean(controlData.visible), // boolean
+				visible :  (controlData.visible === "true"), // boolean
 				value : "{" + parentModel + ">/"+controlData.bindingName + "}", // string
-				enabled : Boolean(controlData.enable), // boolean
-				editable : Boolean(controlData.editable), // boolean
+				enabled : (controlData.enable === "true"), // boolean
+				editable : (controlData.editable === "true"), // boolean
 				required : false, // boolean
 				width : controlData.width, // sap.ui.core.CSSSize
 				maxLength : Number.parseInt(controlData.maxlength), // int
@@ -618,12 +618,12 @@ fnCreatePopUp :function(controlData){
 		if(bMobileEnabled){
 			 oLabel = new sap.m.Label({
 				styleClass:controlData.className,
-				visible : Boolean(controlData.visible), // boolean
+				visible : (controlData.visible === "true"), // boolean
 				design : sap.m.LabelDesign.Standard, // sap.m.LabelDesign
 				text : controlData.label, // string
 				textAlign : alignment, // sap.ui.core.TextAlign
 				width : "100%", // sap.ui.core.CSSSize
-				required : Boolean(controlData.mandatory), // boolean
+				required :(controlData.mandatory === "true"), // boolean
 				tooltip : controlData.tooltip, // sap.ui.core.TooltipBase
 				labelFor : controlData.id
 			});
@@ -631,14 +631,14 @@ fnCreatePopUp :function(controlData){
 		else{
 			
 			oLabel = new sap.ui.commons.Label({
-				visible :  Boolean(controlData.visible), // boolean
+				visible :  (controlData.visible === "true"), // boolean
 				design : sap.ui.commons.LabelDesign.Standard, // sap.ui.commons.LabelDesign
 				wrapping : false, // boolean
 				width : "100%", // sap.ui.core.CSSSize
 				text : controlData.label, // string
 				icon : undefined, // sap.ui.core.URI
 				textAlign : alignment, // sap.ui.core.TextAlign
-				required : Boolean(controlData.mandatory), // boolean, since 1.11.0
+				required :(controlData.mandatory === "true"), // boolean, since 1.11.0
 				requiredAtBegin : undefined, // boolean, since 1.14.0
 				tooltip : controlData.tooltip, // sap.ui.core.TooltipBase
 				labelFor :  controlData.id
@@ -669,11 +669,9 @@ fnCreatePopUp :function(controlData){
 				counter : undefined,
 				tooltip : undefined,
 				cells : [ new sap.m.Text({
-					text : "{defaultModel>name}"
+					text : "{"+sModelName+">Name}"
 				}), new sap.m.Text({
-					text : "{defaultModel>DOB}"
-				}), new sap.m.Text({
-					text : "{defaultModel>designation}"
+					text : "{"+sModelName+">Designation}"
 				}) ],
 				tap : [ function(oEvent) {
 					var control = oEvent.getSource();
@@ -690,13 +688,13 @@ fnCreatePopUp :function(controlData){
 			});
 
 			//create table 
-			var table = new sap.m.Table({
-				id : "tableID",
+			table = new sap.m.Table({
+				id : controlData.id,
 				busy : false,
 				busyIndicatorDelay : 1000,
-				visible : true,
+				visible : (controlData.visible === "true"),
 				inset : false,
-				headerText : "header",
+				headerText : controlData.title,
 				headerDesign : sap.m.ListHeaderDesign.Standard,
 				footerText : undefined,
 				mode : sap.m.ListMode.None,
@@ -710,9 +708,9 @@ fnCreatePopUp :function(controlData){
 				showSeparators : sap.m.ListSeparators.All,
 				swipeDirection : sap.m.SwipeDirection.Both,
 				growing : false,
-				growingThreshold : 20,
+				growingThreshold : Number(controlData.visibleRows),
 				growingTriggerText : undefined,
-				growingScrollToLoad : false,
+				growingScrollToLoad : (controlData.pagination === "true"),
 				rememberSelections : true,
 				backgroundDesign : sap.m.BackgroundDesign.Translucent,
 				fixedLayout : true,
@@ -743,11 +741,7 @@ fnCreatePopUp :function(controlData){
 					header : new sap.m.Text({
 						text : "DOB"
 					}),
-				}), new sap.m.Column({
-					header : new sap.m.Text({
-						text : "Designation"
-					}),
-				}), ],
+				}) ],
 				select : [ function(oEvent) {
 					var control = oEvent.getSource();
 				}, this ],
@@ -778,7 +772,7 @@ fnCreatePopUp :function(controlData){
 			});
 
 			//set model for the table and bind template
-			table.bindAggregation("items", "defaultModel>/results", template);
+			table.bindAggregation("items", sModelName+">/"+controlData.bindingName, template);
 		}
 		else{
 			
@@ -973,9 +967,9 @@ fnCreatePopUp :function(controlData){
 		if(bMobileEnabled){
 			 oSelect = new sap.m.Select({
 				id:controlData.id,
-				visible : Boolean(controlData.visible), // boolean
-				enabled : Boolean(controlData.enable), // boolean
-				editable : Boolean(controlData.editable), // boolean
+				visible : (controlData.visible === "true"), // boolean
+				enabled : (controlData.enable === "true"), // boolean
+				editable : (controlData.editable === "true"), // boolean
 				width : controlData.width, // sap.ui.core.CSSSize
 				maxWidth : "100%", // sap.ui.core.CSSSize
 				selectedKey : "{"+parentModel+">/"+controlData.bindingName+"}", // string, since 1.11
@@ -1003,10 +997,10 @@ fnCreatePopUp :function(controlData){
 		else{
 			oSelect = new sap.ui.commons.DropdownBox({
 				id : controlData.id, // sap.ui.core.ID
-				visible : Boolean(controlData.visible), // boolean
+				visible : (controlData.visible === "true"), // boolean
 				value : "", // string
-				enabled : Boolean(controlData.enable), // boolean
-				editable : Boolean(controlData.editable), // boolean
+				enabled : (controlData.enable === "true"), // boolean
+				editable : (controlData.editable === "true"), // boolean
 				required : false, // boolean
 				width : controlData.width, // sap.ui.core.CSSSize
 				maxLength : 0, // int
@@ -1064,12 +1058,12 @@ fnCreatePopUp :function(controlData){
 		if(bMobileEnabled){
 			 oDatePicker = new sap.m.DatePicker({
 				 id :controlData.id,
-				visible : Boolean(controlData.visible), // boolean
+				visible : (controlData.visible === "true"), // boolean
 				value :  "{"+parentModel+">/"+controlData.bindingName+"}", // string
 				width : controlData.width, // sap.ui.core.CSSSize
-				enabled : Boolean(controlData.enable), // boolean
+				enabled : (controlData.enable === "true"), // boolean
 				placeholder :  controlData.placeholder, // string
-				editable : Boolean(controlData.editable), // boolean, since 1.12.0
+				editable : (controlData.editable === "true"), // boolean, since 1.12.0
 				displayFormat : controlData.displayDateFormat, // string
 				valueFormat : controlData.valueDateFormat, // string
 				dateValue : undefined, // object
@@ -1084,10 +1078,10 @@ fnCreatePopUp :function(controlData){
 //			jQuery.sap.require("sap.ui.unified");
 			oDatePicker = new sap.ui.commons.DatePicker({
 				id : controlData.id, // sap.ui.core.ID
-				visible : Boolean(controlData.visible), // boolean
+				visible : (controlData.visible === "true"), // boolean
 				value : "{"+parentModel+">/"+controlData.bindingName+"}", // string
-				enabled : Boolean(controlData.enable), // boolean
-				editable :  Boolean(controlData.editable), // boolean
+				enabled : (controlData.enable === "true"), // boolean
+				editable :  (controlData.editable === "true"), // boolean
 				required : false, // boolean
 				width : controlData.width, // sap.ui.core.CSSSize
 				maxLength : 0, // int
@@ -1115,12 +1109,12 @@ fnCreatePopUp :function(controlData){
 		if(bMobileEnabled){
 			 oTextArea = new sap.m.TextArea({
 				id:controlData.id,
-				visible : Boolean(controlData.visible), // boolean
+				visible : (controlData.visible === "true"), // boolean
 				value :  "{"+parentModel+">/"+controlData.bindingName+"}", // string
 				width : controlData.width, // sap.ui.core.CSSSize
-				enabled :  Boolean(controlData.enable), // boolean
+				enabled :  (controlData.enable === "true"), // boolean
 				placeholder : controlData.placeholder, // string
-				editable :  Boolean(controlData.editable), // boolean, since 1.12.0
+				editable :  (controlData.editable === "true"), // boolean, since 1.12.0
 				rows : Number.parseInt(controlData.rows), // int
 				cols : Number.parseInt(controlData.cols), // int
 				height : undefined, // sap.ui.core.CSSSize
@@ -1139,10 +1133,10 @@ fnCreatePopUp :function(controlData){
 			
 			oTextArea = new sap.ui.commons.TextArea({
 				id:controlData.id,
-				visible :  Boolean(controlData.visible), // boolean
+				visible :  (controlData.visible === "true"), // boolean
 				value : "{"+parentModel+">/"+controlData.bindingName+"}", // string
-				enabled :  Boolean(controlData.enable), // boolean
-				editable :  Boolean(controlData.editable), // boolean
+				enabled :  (controlData.enable === "true"), // boolean
+				editable :  (controlData.editable === "true"), // boolean
 				required : false, // boolean
 				width : controlData.width, // sap.ui.core.CSSSize
 				maxLength : 0, // int
@@ -1180,14 +1174,14 @@ fnCreatePopUp :function(controlData){
 		if(bMobileEnabled){
 			 oCheckBox = new sap.m.CheckBox({
 				id:controlData.id,
-				visible :  Boolean(controlData.visible), // boolean
+				visible :  (controlData.visible === "true"), // boolean
 				selected : "{"+parentModel+">/"+controlData.bindingName+"}", // boolean
-				enabled : Boolean(controlData.enable), // boolean
+				enabled : (controlData.enable === "true"), // boolean
 				name : controlData.name, // string
 				text : controlData.label, // string
 				width : controlData.width, // sap.ui.core.CSSSize
 				activeHandling : true, // boolean
-				editable : Boolean(controlData.editable), // boolean, since 1.25
+				editable : (controlData.editable === "true"), // boolean, since 1.25
 				tooltip : undefined, // sap.ui.core.TooltipBase
 				select : [ function(oEvent) {
 					var control = oEvent.getSource();
@@ -1197,11 +1191,11 @@ fnCreatePopUp :function(controlData){
 		else{
 			oCheckBox = new sap.ui.commons.CheckBox({
 				id:controlData.id, // sap.ui.core.ID
-				visible : Boolean(controlData.visible), // boolean
+				visible : (controlData.visible === "true"), // boolean
 				checked : "{"+parentModel+">/"+controlData.bindingName+"}", // boolean
 				text : controlData.label, // string
-				enabled : Boolean(controlData.enabled), // boolean
-				editable : Boolean(controlData.editable), // boolean
+				enabled : (controlData.enabled === "true"), // boolean
+				editable : (controlData.editable === "true"), // boolean
 				width : controlData.width, // sap.ui.core.CSSSize
 				textDirection : sap.ui.core.TextDirection.Inherit, // sap.ui.core.TextDirection
 				name : controlData.name, // string
@@ -1224,13 +1218,13 @@ fnCreatePopUp :function(controlData){
 		if(bMobileEnabled){
 			 oRadioButton = new sap.m.RadioButton({
 				id:controlData.id,
-				visible : Boolean(controlData.visible), // boolean
-				enabled : Boolean(controlData.enable), // boolean
+				visible : (controlData.visible === "true"), // boolean
+				enabled : (controlData.enable === "true"), // boolean
 				selected : "{"+parentModel+">/"+controlData.bindingName+"}", // boolean
 				groupName : controlData.groupName, // string
 				text : controlData.label, // string
 				width : controlData.width, // sap.ui.core.CSSSize
-				editable : Boolean(controlData.editable), // boolean, since 1.25
+				editable : (controlData.editable === "true"), // boolean, since 1.25
 				tooltip : controlData.tooltip, // sap.ui.core.TooltipBase
 				select : [ function(oEvent) {
 					var control = oEvent.getSource();
@@ -1240,10 +1234,10 @@ fnCreatePopUp :function(controlData){
 		else{
 			oRadioButton = new sap.ui.commons.RadioButton({
 				id:controlData.id, // sap.ui.core.ID
-				visible : Boolean(controlData.visible), // boolean
+				visible : (controlData.visible === "true"), // boolean
 				text : controlData.label, // string
-				enabled : Boolean(controlData.enable), // boolean
-				editable : Boolean(controlData.editable), // boolean
+				enabled : (controlData.enable === "true"), // boolean
+				editable : (controlData.editable === "true"), // boolean
 				selected : "{"+parentModel+">/"+controlData.bindingName+"}", // boolean
 				valueState : sap.ui.core.ValueState.None, // sap.ui.core.ValueState
 				width : controlData.width, // sap.ui.core.CSSSize
@@ -1278,7 +1272,7 @@ fnCreatePopUp :function(controlData){
 		if(bMobileEnabled){
 			 oText = new sap.m.Text({
 				id:controlData.id,
-				visible : Boolean(controlData.visible), // boolean
+				visible : (controlData.visible === "true"), // boolean
 				text : bindingPath, // string
 				wrapping : true, // boolean
 				textAlign : sap.ui.core.TextAlign.Begin, // sap.ui.core.TextAlign
@@ -1289,10 +1283,10 @@ fnCreatePopUp :function(controlData){
 		}else{
 			 oText = new sap.ui.commons.TextView({
 				id:controlData.id, // sap.ui.core.ID
-				visible : Boolean(controlData.visible), // boolean
+				visible : (controlData.visible === "true"), // boolean
 				text : bindingPath, // string
 				textDirection : sap.ui.core.TextDirection.Inherit, // sap.ui.core.TextDirection
-				enabled : Boolean(controlData.enable), // boolean
+				enabled : (controlData.enable === "true"), // boolean
 				helpId : "", // string
 				accessibleRole : sap.ui.core.AccessibleRole.Document, // sap.ui.core.AccessibleRole
 				design : sap.ui.commons.TextViewDesign.Standard, // sap.ui.commons.TextViewDesign
@@ -1457,15 +1451,15 @@ fnCreatePopUp :function(controlData){
 		var bMobileEnabled = sap.ui.getCore().getModel('applicationModel').getProperty('/mobile');
 		if(bMobileEnabled){
 			oLink = new sap.m.Link({
-				visible : Boolean(actionData.visible), 
+				visible : (actionData.visible === "true"), 
 				text : actionData.label, 
-				enabled : Boolean(actionData.enabled), // boolean
+				enabled : (actionData.enabled === "true"), // boolean
 				target : undefined, // string
 				width : undefined, // sap.ui.core.CSSSize
 				href : actionData.screenRef, // sap.ui.core.URI
 				wrapping : false, // boolean
 				subtle : false, // boolean, since 1.22
-				emphasized : Boolean(actionData.emphasized), // boolean, since 1.22
+				emphasized :(actionData.emphasized === "true"), // boolean, since 1.22
 				tooltip : actionData.tooltip, // sap.ui.core.TooltipBase
 				press : [ function(oEvent) {
 					var control = oEvent.getSource();
