@@ -724,6 +724,7 @@ fnCreatePopUp :function(controlData){
 			};
 //			/var oAddRowButton = this.fnCreateButton(oButtonData, controlData);
 			var oAddRowButton = this.fnCreateButton(oButtonData, controlData,"fnAddRow");
+			oAddRowButton.setVisible(true);
 			if(bMobileEnabled){
 				oToolbar.addContent(oAddRowButton);
 			}
@@ -741,6 +742,7 @@ fnCreatePopUp :function(controlData){
 			};
 //			var oUpdateRowButton = this.fnCreateButton(oButtonData, controlData);
 			var oUpdateRowButton = this.fnCreateButton(oButtonData, controlData,"fnUpdateRow");
+			oUpdateRowButton.setVisible(true);
 			if(bMobileEnabled){
 				oToolbar.addContent(oUpdateRowButton);
 			}
@@ -756,6 +758,7 @@ fnCreatePopUp :function(controlData){
 			};
 //			var oDeleteRowButton = this.fnCreateButton(oButtonData, controlData);
 			var oDeleteRowButton = this.fnCreateButton(oButtonData, controlData,"fnDeleteRow");
+			oDeleteRowButton.setVisible(true);
 			if(bMobileEnabled){
 				oToolbar.addContent(oDeleteRowButton);
 			}
@@ -1566,7 +1569,7 @@ fnCreatePopUp :function(controlData){
 		var bMobileEnabled = sap.ui.getCore().getModel('applicationModel').getProperty('/mobile');
 		if(bMobileEnabled){
 			 oButton = new sap.m.Button({
-				visible : true, // boolean
+				visible : (actionData.visible === "true"), // boolean
 				text : actionData.label, // string
 				type : sap.m.ButtonType.Default, // sap.m.ButtonType
 				width : actionData.width, // sap.ui.core.CSSSize
@@ -1588,7 +1591,7 @@ fnCreatePopUp :function(controlData){
 		}
 		else{
 			oButton  = new sap.ui.commons.Button({
-				visible : true, // boolean
+				visible : (actionData.visible === "true"), // boolean
 				text : actionData.label, // string
 				enabled : true, // boolean
 				width : undefined, // sap.ui.core.CSSSize
