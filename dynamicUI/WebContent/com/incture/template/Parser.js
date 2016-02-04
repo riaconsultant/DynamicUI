@@ -1598,62 +1598,23 @@ fnCreatePopUp :function(controlData){
 			          onClose: function(oAction) {  }
 			      });
 		}
+		
 		if(actionData.targetAction === "" || actionData.targetAction === " "){
-			var valid = this.ValidateFormData(modelData, oModelName);
-			if(valid === true){
-				this.fnPassDataToTarget(actionData.targetControl.targetScreenId, modelData);
-			}else{
-				this.showInfoMessage(valid);
-			}
-		}
-	},
-	
-	ValidateFormData: function(modelData, dataControlId){
-		var dataControl = sap.ui.getCore().byId(dataControlId);
-		
-		var bMobileEnabled = sap.ui.getCore().getModel('applicationModel').getProperty('/mobile');
-		if(bMobileEnabled){
-			var elements = dataControl.getAggregation("content");
-			var errorMsg=false;
-			for(var elementInc = 0; elementInc <elements.length; elementInc++){
-				var aElement = elements[elementInc];
-				var  elementType = aElement.getMetadata().getName();
-				if(elementType === "sap.m.Label"){
-					if(aElement.getProperty("required") === true){
-						var valueType = elements[elementInc+1].getMetadata().getName();
-						var value = "";
-						switch(valueType){
-						case "sap.m.Input":value = elements[elementInc+1].getValue();
-							break;
-						case "sap.m.Text":value = elements[elementInc+1].getText();
-							break;
-						case "sap.m.DatePicker":value = elements[elementInc+1].getValue();
-							break;
-						case "sap.m.TextArea":value = elements[elementInc+1].getValue();
-							break;
-						case "sap.m.Select":value = elements[elementInc+1].getSelectedKey();
-							break;
-						default: return true;
-						}
-						if(value === ""){
-							if(valueType !== "sap.m.Select"){
-								elements[elementInc+1].setValueState("Error");							
-							}
-							errorMsg = true;
-						}else{
-							if(valueType !== "sap.m.Select"){
-								elements[elementInc+1].setValueState("None");							
-							}
-						}
-					}
+			var actionType = actionData.label.toLowerCase();
+			if(actionType === "submit"){
+				var valid = this.ValidateFormData(modelData, oModelName);
+				if(valid === true){
+					this.fnPassDataToTarget(actionData.targetControl.targetScreenId, modelData);
+				}else{
+					this.showInfoMessage(valid);
 				}
+			}else if(actionType === "save"){
+				this.fnPassDataToTarget(actionData.targetControl.targetScreenId, modelData);
+			}else if(actionType === "delete" || actionType === "cancel"){
+				this.fnClearFormData(oModelName);
 			}
-			if(errorMsg){
-				return "Please fill all required fields";
-			}
+			
 		}
-		
-		return true;
 	},
 	
 	fnCreateLink : function(actionData){
@@ -1730,8 +1691,8 @@ fnCreatePopUp :function(controlData){
 						  }
 					  }else{
 						  returnData = that.fnParseReturnData(data,actionData);
-						  if(model !== undefined){
-							  model.setData(data);
+						  if(modelName !== undefined){
+							  modelName.setData(data);
 						  }
 					  }
 				  }
@@ -2164,6 +2125,7 @@ fnCreatePopUp :function(controlData){
 		console.log(oEvent);
 		alert('called');
 	},
+	
 	fnPassDataToTarget : function(targetId, data){
 		var appId= sap.ui.getCore().getModel("applicationModel").getProperty("/applicationId");
 		var targetModel = sap.ui.getCore().byId(appId).getModel(targetId+"_model");
@@ -2187,6 +2149,81 @@ fnCreatePopUp :function(controlData){
 		} 
 		
 		sap.ui.getCore().byId(appId).getModel(targetId+"_model").setData(targetData);
+	},
+	
+	fnClearFormData : function(dataControlId){
+		var dataControl = sap.ui.getCore().byId(dataControlId);
+		
+		var bMobileEnabled = sap.ui.getCore().getModel('applicationModel').getProperty('/mobile');
+		if(bMobileEnabled){
+			var elements = dataControl.getAggregation("content");
+			for(var elementInc = 0; elementInc <elements.length; elementInc++){
+				var aElement = elements[elementInc];
+				var  elementType = aElement.getMetadata().getName();
+				if(elementType === "sap.m.Label"){
+					var valueType = elements[elementInc+1].getMetadata().getName();
+					switch(valueType){
+					case "sap.m.Text":elements[elementInc+1].setText("");
+						break;
+					case "sap.m.Input":
+					case "sap.m.DatePicker":
+					case "sap.m.TextArea":elements[elementInc+1].setValue("");
+						break;
+					case "sap.m.Select":elements[elementInc+1].setSelectedKey("");
+						break;
+					default: return true;
+					}
+				}
+			}
+		}
+	},
+	
+	ValidateFormData: function(modelData, dataControlId){
+		var dataControl = sap.ui.getCore().byId(dataControlId);
+		
+		var bMobileEnabled = sap.ui.getCore().getModel('applicationModel').getProperty('/mobile');
+		if(bMobileEnabled){
+			var elements = dataControl.getAggregation("content");
+			var errorMsg=false;
+			for(var elementInc = 0; elementInc <elements.length; elementInc++){
+				var aElement = elements[elementInc];
+				var  elementType = aElement.getMetadata().getName();
+				if(elementType === "sap.m.Label"){
+					if(aElement.getProperty("required") === true){
+						var valueType = elements[elementInc+1].getMetadata().getName();
+						var value = "";
+						switch(valueType){
+						case "sap.m.Input":value = elements[elementInc+1].getValue();
+							break;
+						case "sap.m.Text":value = elements[elementInc+1].getText();
+							break;
+						case "sap.m.DatePicker":value = elements[elementInc+1].getValue();
+							break;
+						case "sap.m.TextArea":value = elements[elementInc+1].getValue();
+							break;
+						case "sap.m.Select":value = elements[elementInc+1].getSelectedKey();
+							break;
+						default: return true;
+						}
+						if(value === ""){
+							if(valueType !== "sap.m.Select"){
+								elements[elementInc+1].setValueState("Error");							
+							}
+							errorMsg = true;
+						}else{
+							if(valueType !== "sap.m.Select"){
+								elements[elementInc+1].setValueState("None");							
+							}
+						}
+					}
+				}
+			}
+			if(errorMsg){
+				return "Please fill all required fields";
+			}
+		}
+		
+		return true;
 	},
 	
 	showInfoMessage : function(message){

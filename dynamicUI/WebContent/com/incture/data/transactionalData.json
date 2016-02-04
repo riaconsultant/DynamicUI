@@ -346,10 +346,10 @@
                         "serviceMethod": "post",
                         "screenRef": "",
                         "icon":"",
-                        "targetAction":"Message",
+                        "targetAction":"",
                         "targetControl": 
 						{
-                            "targetScreenId":"",
+                            "targetScreenId":"idTable",
                             "targetDataPath": "",
                             "targetDataBind": "",
                             "model": ""
@@ -364,7 +364,7 @@
                         "serviceMethod": "post",
                         "screenRef": "",
                         "icon":"",
-                        "targetAction":"Message",
+                        "targetAction":"",
                         "targetControl": 
 						{
                             "targetScreenId":"",
