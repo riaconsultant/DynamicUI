@@ -122,7 +122,7 @@ com.incture.template.Parser = {
 		
 		return page;
 	},
-fnCreatePopUp :function(controlData){
+	fnCreatePopUp :function(controlData){
 		
 		var content = this.getContentFromJson(controlData);
 		
@@ -255,10 +255,13 @@ fnCreatePopUp :function(controlData){
 		if(controlType!==undefined){
 			controlType = controlType.toLowerCase();
 		}
+		
+		
 		var oReturnControl = null;
+		
 		switch (controlType) {
 		case "input":
-			oReturnControl = this.fnCreateInput(controlData,parentControl);
+			oReturnControl = this.fnCreateInput(controlData,parentControl,bTableElement);
 			break;
 		case "radiobutton":
 			oReturnControl = this.fnCreateRadioButton(controlData,parentControl);
@@ -316,11 +319,6 @@ fnCreatePopUp :function(controlData){
 		}
 		for (var elementInc = 0; elementInc < oFormElements.length; elementInc++) {
 			var element = oFormElements[elementInc];
-//			var oControl = this.fnParseControl(element,controlData);
-			/**
-			 * Change --  to check if control is created for Table form or normal form
-			 * 
-			 */
 			if(bTableForm){
 				var oControl = this.fnParseControl(element,parentControl);
 			}
@@ -404,7 +402,6 @@ fnCreatePopUp :function(controlData){
 				aRows.push(oRow);
 			}
 			var element = oFormElements[elementInc];
-			//var oControl = this.fnParseControl(element,controlData);
 			if(bTableForm){
 				var oControl = this.fnParseControl(element,parentControl);
 			}
@@ -701,7 +698,6 @@ fnCreatePopUp :function(controlData){
 					label:"Add"
 					
 			};
-//			/var oAddRowButton = this.fnCreateButton(oButtonData, controlData);
 			var oAddRowButton = this.fnCreateButton(oButtonData, controlData,"fnAddRow");
 			if(bMobileEnabled){
 				oToolbar.addContent(oAddRowButton);
@@ -718,7 +714,6 @@ fnCreatePopUp :function(controlData){
 					label:"Update"
 					
 			};
-//			var oUpdateRowButton = this.fnCreateButton(oButtonData, controlData);
 			var oUpdateRowButton = this.fnCreateButton(oButtonData, controlData,"fnUpdateRow");
 			if(bMobileEnabled){
 				oToolbar.addContent(oUpdateRowButton);
@@ -733,7 +728,6 @@ fnCreatePopUp :function(controlData){
 					label:"Delete"
 					
 			};
-//			var oDeleteRowButton = this.fnCreateButton(oButtonData, controlData);
 			var oDeleteRowButton = this.fnCreateButton(oButtonData, controlData,"fnDeleteRow");
 			if(bMobileEnabled){
 				oToolbar.addContent(oDeleteRowButton);
@@ -746,6 +740,7 @@ fnCreatePopUp :function(controlData){
 		if(bMobileEnabled){
 			oToolbar.addContent(new sap.m.ToolbarSpacer({ width:"10%"}));
 		}
+		
 		for (var columnInc = 0; columnInc < tableColumns.length; columnInc++) {
 			var arrayElement = tableColumns[columnInc];
 			var oColumn = this.fnCreateColumn(arrayElement,controlData)
@@ -793,8 +788,8 @@ fnCreatePopUp :function(controlData){
 				}, this ]
 			});
 
-			var selectionMode = controlData.multiSelect == 'true' ? sap.m.ListMode.MultiSelect : sap.m.ListMode.SingleSelectLeft;
 			//create table 
+			var selectionMode = controlData.multiSelect == 'true' ? sap.m.ListMode.MultiSelect : sap.m.ListMode.SingleSelectLeft;
 			table = new sap.m.Table({
 				id : controlData.id,
 				busy : false,
@@ -962,10 +957,10 @@ fnCreatePopUp :function(controlData){
 				height:"100%",
 				content:[oLayout]
 			});
-		}*/
+		}
+		*/
 		
 		var oDialog = this.fnCreateTableFormDialog(controlData,oLayout);
-		
 		
 
 		return table;
@@ -1503,7 +1498,7 @@ fnCreatePopUp :function(controlData){
 	/** Function methods for parsing actions **/
 	fnCreateButton : function(actionData, parentControl,fnCallBack){
 		var oButton = undefined;
-		var that = this;
+		that = this;
 		var bMobileEnabled = sap.ui.getCore().getModel('applicationModel').getProperty('/mobile');
 		if(bMobileEnabled){
 			 oButton = new sap.m.Button({
@@ -1532,6 +1527,7 @@ fnCreatePopUp :function(controlData){
 					if(fnCallBack!= undefined && fnCallBack != ""){
 						that[fnCallBack](oEvent);
 					}
+					
 					/*var returnData = this.fnGetJson(actionData.serviceUrl, modelData, method, true, actionData );
 					// nav to detailscreen
 					com.incture.template.router.setHash(actionData.targetControl.targetScreenId);*/
@@ -1683,6 +1679,7 @@ fnCreatePopUp :function(controlData){
 		
 		return data;
 	},
+	/** **/
 	fnAddRow:function(oEvent){
 		console.log(oEvent);
 		var sTableId = oEvent.getSource().getParent().getParent().getId();
@@ -1817,7 +1814,7 @@ fnCreatePopUp :function(controlData){
 				tooltip : undefined, // sap.ui.core.TooltipBase
 				press : [ function(oEvent) {
 					var control = oEvent.getSource();
-					that.fnSaveDialogDataToTable(oEvent);
+					that.fnCloseDialog(oEvent);
 				}, this ]
 			});
 			
@@ -1954,6 +1951,7 @@ fnCreatePopUp :function(controlData){
 			
 		}
 		var dupData = jQuery.extend(true, [], oTableModel.getData());
+
 		var arr = $.grep(dupData, function(n, i) {
 		    return $.inArray(i, aSelectedIndices) ==-1;
 		});
@@ -1961,6 +1959,7 @@ fnCreatePopUp :function(controlData){
 		oTableModel.refresh();
 	},
 	fnUpdateRow:function(oEvent){
+
 		var oTable = oEvent.getSource().getParent().getParent();
 		if(bMobileEnabled){
 			oTable = oEvent.getSource().getParent().getParent().getParent();
@@ -2078,6 +2077,7 @@ fnCreatePopUp :function(controlData){
 				that[onCloseHandler](oEvent);
 			},title);
 		}
+
 	},
 	fnConfirmDelete:function(oEvent){
 		console.log(oEvent);
@@ -2085,6 +2085,6 @@ fnCreatePopUp :function(controlData){
 		
 		
 		
-	}
-	/** **/
+	},
+	
 }
