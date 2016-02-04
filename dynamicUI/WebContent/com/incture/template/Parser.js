@@ -709,7 +709,9 @@ fnCreatePopUp :function(controlData){
 		
 		
 		//console.log(oDialog.getId())
-		var oToolbar = this.fnCreateToolBar();
+		var oToolbar = undefined;
+		oToolbar = this.fnCreateToolBar([]);
+		
 		if(bMobileEnabled){
 			oToolbar.addContent(new sap.m.ToolbarSpacer({}));
 			oToolbar.setDesign("Solid");
@@ -770,10 +772,10 @@ fnCreatePopUp :function(controlData){
 			var oColumn = this.fnCreateColumn(arrayElement,controlData)
 			aColumns.push(oColumn);
 		}
-		
+		//console.log(oToolbar.getContent())
 		
 		if(bMobileEnabled){
-			this.fnGetJson(controlData.serviceUrl, null, "get", true, null, sModelName);
+			//this.fnGetJson(controlData.serviceUrl, null, "get", true, null, sModelName);
 			
 			
 			oLayout = this.fnCreateGrid(controlData.columns, controlData,true);
@@ -844,8 +846,8 @@ fnCreatePopUp :function(controlData){
 				tooltip : undefined,
 				items : [],
 				swipeContent : undefined,
-				headerToolbar : oToolbar,
-				infoToolbar : undefined,
+				headerToolbar : undefined,
+				infoToolbar : oToolbar,
 				columns : bColumns,
 				select : [ function(oEvent) {
 					var control = oEvent.getSource();
@@ -1109,6 +1111,13 @@ fnCreatePopUp :function(controlData){
 		var itemModel = controlData.id+"_model";
 		var bMobileEnabled = sap.ui.getCore().getModel('applicationModel').getProperty('/mobile');
 		var oSelect = undefined;
+		var type = parentControl.type;
+		if(type!=undefined){
+			type = type.toLowerCase();
+			if(type == "table"){
+				parentModel = parentControl.id +"_formId_model";
+			}
+		}
 		if(bMobileEnabled){
 			 oSelect = new sap.m.Select({
 				id:controlData.id,
@@ -1197,6 +1206,13 @@ fnCreatePopUp :function(controlData){
 	
 	fnCreateDatePicker:function(controlData,parentControl){
 		var parentModel = parentControl.id +"_model";
+		var type = parentControl.type;
+		if(type!=undefined){
+			type = type.toLowerCase();
+			if(type == "table"){
+				parentModel = parentControl.id +"_formId_model";
+			}
+		}
 		var oDatePicker = undefined;
 		var bMobileEnabled = sap.ui.getCore().getModel('applicationModel').getProperty('/mobile');
 		
@@ -1249,6 +1265,13 @@ fnCreatePopUp :function(controlData){
 	fnCreateTextArea :function(controlData,parentControl){
 		
 		var parentModel = parentControl.id +"_model";
+		var type = parentControl.type;
+		if(type!=undefined){
+			type = type.toLowerCase();
+			if(type == "table"){
+				parentModel = parentControl.id +"_formId_model";
+			}
+		}
 		var oTextArea = undefined;
 		var bMobileEnabled = sap.ui.getCore().getModel('applicationModel').getProperty('/mobile');
 		if(bMobileEnabled){
@@ -1313,6 +1336,13 @@ fnCreatePopUp :function(controlData){
 	fnCreateCheckBox : function(controlData,parentControl){
 		
 		var parentModel = parentControl.id +"_model";
+		var type = parentControl.type;
+		if(type!=undefined){
+			type = type.toLowerCase();
+			if(type == "table"){
+				parentModel = parentControl.id +"_formId_model";
+			}
+		}
 		var oCheckBox = undefined;s
 			
 		var bMobileEnabled = sap.ui.getCore().getModel('applicationModel').getProperty('/mobile');
@@ -1357,7 +1387,13 @@ fnCreatePopUp :function(controlData){
 	fnCreateRadioButton: function(controlData,parentControl){
 		
 		var parentModel = parentControl.id +"_model";
-		
+		var type = parentControl.type;
+		if(type!=undefined){
+			type = type.toLowerCase();
+			if(type == "table"){
+				parentModel = parentControl.id +"_formId_model";
+			}
+		}
 		var oRadioButton = undefined;
 		var bMobileEnabled = sap.ui.getCore().getModel('applicationModel').getProperty('/mobile');
 		if(bMobileEnabled){
@@ -1407,16 +1443,19 @@ fnCreatePopUp :function(controlData){
 	fnCreateText:function(controlData,parentControl,bRelativeBinding){
 		
 		var parentModel = parentControl.id +"_model";
+		
+		var idControl = controlData.id;
 		var bindingPath = "{"+parentModel+">/"+controlData.bindingName+"}";
 		if(bRelativeBinding){
 			bindingPath = "{"+parentModel+">"+controlData.bindingName+"}";
+			idControl = controlData.colId;
 		}
 		
 		var oText = undefined;
 		var bMobileEnabled = sap.ui.getCore().getModel('applicationModel').getProperty('/mobile');
 		if(bMobileEnabled){
 			 oText = new sap.m.Text({
-				id:controlData.id,
+				id:idControl,
 				visible : (controlData.visible === "true"), // boolean
 				text : bindingPath, // string
 				wrapping : true, // boolean
@@ -1427,7 +1466,7 @@ fnCreatePopUp :function(controlData){
 			});
 		}else{
 			 oText = new sap.ui.commons.TextView({
-				id:controlData.id, // sap.ui.core.ID
+				id:idControl, // sap.ui.core.ID
 				visible : (controlData.visible === "true"), // boolean
 				text : bindingPath, // string
 				textDirection : sap.ui.core.TextDirection.Inherit, // sap.ui.core.TextDirection
@@ -1527,7 +1566,7 @@ fnCreatePopUp :function(controlData){
 		var bMobileEnabled = sap.ui.getCore().getModel('applicationModel').getProperty('/mobile');
 		if(bMobileEnabled){
 			 oButton = new sap.m.Button({
-				visible : (actionData.visible === "true"), // boolean
+				visible : true, // boolean
 				text : actionData.label, // string
 				type : sap.m.ButtonType.Default, // sap.m.ButtonType
 				width : actionData.width, // sap.ui.core.CSSSize
