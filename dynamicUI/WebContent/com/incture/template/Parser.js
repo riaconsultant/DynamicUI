@@ -289,7 +289,7 @@ fnCreatePopUp :function(controlData){
 			break;
 		case "submit":
 		case "button":
-			oReturnControl = this.fnCreateButton(controlData, parentControl);
+			oReturnControl = this.fnCreateButton(controlData, parentControl, "parseFormActions");
 			break;
 		case "link":
 			oReturnControl = this.fnCreateLink(controlData, parentControl);
@@ -300,8 +300,6 @@ fnCreatePopUp :function(controlData){
 		default:
 			break;
 		}
-
-		
 		return oReturnControl;
 	},
 	
@@ -569,6 +567,7 @@ fnCreatePopUp :function(controlData){
 		}
 		var oInput = undefined;
 		var bMobileEnabled = sap.ui.getCore().getModel('applicationModel').getProperty('/mobile');
+		var valueType = this.fnParseInputValueType(controlData.valueType);
 		if(bMobileEnabled){
 			 oInput = new sap.m.Input({
 				id:controlData.id,
@@ -579,7 +578,7 @@ fnCreatePopUp :function(controlData){
 				placeholder : controlData.placeholder, // string
 				styleClass:controlData.className,
 				editable : (controlData.editable === "true"), // boolean, since 1.12.0
-				type : sap.m.InputType.Text, // sap.m.InputType
+				type : valueType, // sap.m.InputType
 				maxLength : Number.parseInt(controlData.maxlength), // int
 				dateFormat : "YYYY-MM-dd", // string
 				showValueHelp : false, // boolean, since 1.16
@@ -636,6 +635,26 @@ fnCreatePopUp :function(controlData){
 		
 		
 		return oInput;
+	},
+	
+	fnParseInputValueType : function(valueType){
+		var type="";
+		valueType= valueType.toLowerCase();
+		
+		switch(valueType){
+		case "text": type= sap.m.InputType.Text;
+			break;
+		case "tel": type= sap.m.InputType.Tel;
+			break;
+		case "number": type= sap.m.InputType.Number;
+			break;
+		case "email": type= sap.m.InputType.email;
+			break;
+		default: type= sap.m.InputType.Text;
+			break;
+		}
+		
+		return type;
 	},
 	
 	fnCreateLabel : function(controlData,alignment) {
@@ -1497,44 +1516,34 @@ fnCreatePopUp :function(controlData){
 			modelName = controlData.model;
 		}
 		var oModel = new sap.ui.model.json.JSONModel();
-		var fetchData = this.fnGetJson(serviceUrl,null,"get",true,null,oModel);
+		var fetchData = this.fnGetJson(serviceUrl,null,"get",true,null,modelName);
 		sap.ui.getCore().byId(applicationId).setModel(oModel,modelName);
 	},
+	
 	/** Function methods for parsing actions **/
-	fnCreateButton : function(actionData, parentControl,fnCallBack){
+	fnCreateButton : function(actionData, parentControl, fnCallBack){
 		var oButton = undefined;
 		var that = this;
 		var bMobileEnabled = sap.ui.getCore().getModel('applicationModel').getProperty('/mobile');
 		if(bMobileEnabled){
 			 oButton = new sap.m.Button({
-				visible : true, // boolean
+				visible : (actionData.visible === "true"), // boolean
 				text : actionData.label, // string
 				type : sap.m.ButtonType.Default, // sap.m.ButtonType
-				width : undefined, // sap.ui.core.CSSSize
-				enabled : true, // boolean
-				icon : undefined, // sap.ui.core.URI
+				width : actionData.width, // sap.ui.core.CSSSize
+				enabled : !(actionData.enable === "false"), // boolean
+				icon : actionData.length, // sap.ui.core.URI
 				iconFirst : true, // boolean
 				activeIcon : undefined, // sap.ui.core.URI
 				iconDensityAware : true, // boolean
 				tooltip : actionData.tooltip, // sap.ui.core.TooltipBase
-				ariaDescribedBy : [], // sap.ui.core.Control
-				ariaLabelledBy : [], // sap.ui.core.Control
 				tap : [ function(oEvent) {
 					var control = oEvent.getSource();
 				}, this ],
 				press : [ function(oEvent) {
-					var control = oEvent.getSource();
-					var oModelName = control.getModel("parentModel").getProperty('/ParentId');
-					var applicationId = sap.ui.getCore().getModel("applicationModel").getProperty('/applicationId');
-					var modelData = sap.ui.getCore().byId(applicationId).getModel(oModelName+"_model").getData();
-					var actionData = control.getModel("parentModel").getProperty('/Action');
-					var method = actionData.serviceMethod;
 					if(fnCallBack!= undefined && fnCallBack != ""){
 						that[fnCallBack](oEvent);
 					}
-					/*var returnData = this.fnGetJson(actionData.serviceUrl, modelData, method, true, actionData );
-					// nav to detailscreen
-					com.incture.template.router.setHash(actionData.targetControl.targetScreenId);*/
 				}, this ]
 			});
 		}
@@ -1555,16 +1564,9 @@ fnCreatePopUp :function(controlData){
 				style : sap.ui.commons.ButtonStyle.Default, // sap.ui.commons.ButtonStyle
 				tooltip :actionData.label , // sap.ui.core.TooltipBase
 				press : [ function(oEvent) {
-					var control = oEvent.getSource();
-					var oModelName = control.getModel("parentModel").getProperty('/ParentId');
-					var applicationId = sap.ui.getCore().getModel("applicationModel").getProperty('/applicationId');
-					var modelData = sap.ui.getCore().byId(applicationId).getModel(oModelName+"_model").getData();
-					var actionData = control.getModel("parentModel").getProperty('/Action');
-					var method = actionData.serviceMethod;
-					that[fnCallBack](oEvent);
-					/*var returnData = this.fnGetJson(actionData.serviceUrl, modelData, method, true, actionData );
-					// nav to detailscreen
-					com.incture.template.router.setHash(actionData.targetControl.targetScreenId);*/
+					if(fnCallBack!= undefined && fnCallBack != ""){
+						that[fnCallBack](oEvent);
+					}
 				}, this ]
 			});
 		}
@@ -1573,6 +1575,85 @@ fnCreatePopUp :function(controlData){
 		var oModel = new sap.ui.model.json.JSONModel({"Action":actionData,"ParentId":parentControl.id});
 		oButton.setModel(oModel,"parentModel");
 		return oButton;
+	},
+	
+	parseFormActions:function(oEvent){
+		var control = oEvent.getSource();
+		var oModelName = control.getModel("parentModel").getProperty('/ParentId');
+		var applicationId = sap.ui.getCore().getModel("applicationModel").getProperty('/applicationId');
+		var modelData = sap.ui.getCore().byId(applicationId).getModel(oModelName+"_model").getData();
+		var actionData = control.getModel("parentModel").getProperty('/Action');
+		var method = actionData.serviceMethod;
+		var returnData = this.fnGetJson(actionData.serviceUrl, modelData, method, true, actionData );
+		
+		if(actionData.targetAction === "navigation"){
+			com.incture.template.router.setHash(actionData.targetControl.targetScreenId);
+		}
+		if(actionData.targetAction === "Message" && actionData.serviceUrl === ""){
+			sap.m.MessageBox.confirm(
+			      	  actionData.targetMessage, {
+			          icon: sap.m.MessageBox.Icon.INFORMATION,
+			          title: "Information",
+			          actions: [sap.m.MessageBox.Action.OK],
+			          onClose: function(oAction) {  }
+			      });
+		}
+		if(actionData.targetAction === "" || actionData.targetAction === " "){
+			var valid = this.ValidateFormData(modelData, oModelName);
+			if(valid === true){
+				this.fnPassDataToTarget(actionData.targetControl.targetScreenId, modelData);
+			}else{
+				this.showInfoMessage(valid);
+			}
+		}
+	},
+	
+	ValidateFormData: function(modelData, dataControlId){
+		var dataControl = sap.ui.getCore().byId(dataControlId);
+		
+		var bMobileEnabled = sap.ui.getCore().getModel('applicationModel').getProperty('/mobile');
+		if(bMobileEnabled){
+			var elements = dataControl.getAggregation("content");
+			var errorMsg=false;
+			for(var elementInc = 0; elementInc <elements.length; elementInc++){
+				var aElement = elements[elementInc];
+				var  elementType = aElement.getMetadata().getName();
+				if(elementType === "sap.m.Label"){
+					if(aElement.getProperty("required") === true){
+						var valueType = elements[elementInc+1].getMetadata().getName();
+						var value = "";
+						switch(valueType){
+						case "sap.m.Input":value = elements[elementInc+1].getValue();
+							break;
+						case "sap.m.Text":value = elements[elementInc+1].getText();
+							break;
+						case "sap.m.DatePicker":value = elements[elementInc+1].getValue();
+							break;
+						case "sap.m.TextArea":value = elements[elementInc+1].getValue();
+							break;
+						case "sap.m.Select":value = elements[elementInc+1].getSelectedKey();
+							break;
+						default: return true;
+						}
+						if(value === ""){
+							if(valueType !== "sap.m.Select"){
+								elements[elementInc+1].setValueState("Error");							
+							}
+							errorMsg = true;
+						}else{
+							if(valueType !== "sap.m.Select"){
+								elements[elementInc+1].setValueState("None");							
+							}
+						}
+					}
+				}
+			}
+			if(errorMsg){
+				return "Please fill all required fields";
+			}
+		}
+		
+		return true;
 	},
 	
 	fnCreateLink : function(actionData){
@@ -1629,7 +1710,7 @@ fnCreatePopUp :function(controlData){
 	/**
 	 * JQuery Ajax methods
 	 */
-	fnGetJson:function(serviceUrl, data, method, async, actionData,model){
+	fnGetJson:function(serviceUrl, data, method, async, actionData,modelName){
 		var returnData = {};
 		var that=this;
 		$.ajax({
@@ -1642,10 +1723,10 @@ fnCreatePopUp :function(controlData){
 				  returnData =  rData;
 				  if(async){
 					  if(!actionData && !data){
-						  if(model){
+						  if(modelName){
 							  var oModel = new sap.ui.model.json.JSONModel(returnData);
 							  var appId = sap.ui.getCore().getModel("applicationModel").getProperty("/applicationId");
-							  sap.ui.getCore().byId(appId).setModel(oModel,model);
+							  sap.ui.getCore().byId(appId).setModel(oModel,modelName);
 						  }
 					  }else{
 						  returnData = that.fnParseReturnData(data,actionData);
@@ -2082,9 +2163,40 @@ fnCreatePopUp :function(controlData){
 	fnConfirmDelete:function(oEvent){
 		console.log(oEvent);
 		alert('called');
+	},
+	fnPassDataToTarget : function(targetId, data){
+		var appId= sap.ui.getCore().getModel("applicationModel").getProperty("/applicationId");
+		var targetModel = sap.ui.getCore().byId(appId).getModel(targetId+"_model");
+		var targetData = targetModel.getData();
 		
+		var controlType = sap.ui.getCore().byId(targetId).getMetadata().getName();
+		if(controlType === "sap.m.Table"){
+			var binding = sap.ui.getCore().byId(targetId).getBindingInfo("items").path;
+			path = binding.split("/")[1];
+			if(path){
+				targetData[path].push(data);
+			}else{
+				if(!targetData.length){
+					targetData=[];
+				}
+				targetData.push(data);
+			}
+		}else if(controlType === "sap.ui.table.Table"){//replace data
+			targetData=[];
+			targetData.push(data);
+		} 
 		
-		
+		sap.ui.getCore().byId(appId).getModel(targetId+"_model").setData(targetData);
+	},
+	
+	showInfoMessage : function(message){
+		sap.m.MessageBox.confirm(
+		      	  message, {
+		          icon: sap.m.MessageBox.Icon.INFORMATION,
+		          title: "Information",
+		          actions: [sap.m.MessageBox.Action.OK],
+		          onClose: function(oAction) {  }
+		      });
 	}
 	/** **/
 }
