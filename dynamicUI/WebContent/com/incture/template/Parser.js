@@ -289,7 +289,7 @@ fnCreatePopUp :function(controlData){
 			break;
 		case "submit":
 		case "button":
-			oReturnControl = this.fnCreateButton(controlData, parentControl, "parseFormActions");
+			oReturnControl = this.fnCreateButton(controlData, parentControl, "fnParseFormActions");
 			break;
 		case "link":
 			oReturnControl = this.fnCreateLink(controlData, parentControl);
@@ -1619,7 +1619,7 @@ fnCreatePopUp :function(controlData){
 		return oButton;
 	},
 	
-	parseFormActions:function(oEvent){
+	fnParseFormActions:function(oEvent){
 		var control = oEvent.getSource();
 		var oModelName = control.getModel("parentModel").getProperty('/ParentId');
 		var applicationId = sap.ui.getCore().getModel("applicationModel").getProperty('/applicationId');
@@ -1641,7 +1641,7 @@ fnCreatePopUp :function(controlData){
 			      });
 		}
 		
-		if(actionData.targetAction === "" || actionData.targetAction === " "){
+		if(actionData.targetAction === "" || actionData.targetAction === " " && targetControl.targetScreenId !== ""){
 			var actionType = actionData.label.toLowerCase();
 			if(actionType === "submit"){
 				var valid = this.ValidateFormData(modelData, oModelName);
@@ -2172,22 +2172,35 @@ fnCreatePopUp :function(controlData){
 		var appId= sap.ui.getCore().getModel("applicationModel").getProperty("/applicationId");
 		var targetModel = sap.ui.getCore().byId(appId).getModel(targetId+"_model");
 		var targetData = targetModel.getData();
-		
+		var aData = jQuery.extend(true, {}, data);
 		var controlType = sap.ui.getCore().byId(targetId).getMetadata().getName();
 		if(controlType === "sap.m.Table"){
 			var binding = sap.ui.getCore().byId(targetId).getBindingInfo("items").path;
 			path = binding.split("/")[1];
 			if(path){
-				targetData[path].push(data);
+				targetData[path].push(aData);
 			}else{
 				if(!targetData.length){
 					targetData=[];
 				}
-				targetData.push(data);
+				targetData.push(aData);
 			}
 		}else if(controlType === "sap.ui.table.Table"){//replace data
-			targetData=[];
-			targetData.push(data);
+			var path = sap.ui.getCore().byId(targetId).getBindingInfo("rows").path;
+			if(path){
+				if(targetData[path]){
+					if(!targetData[path].length){
+						targetData[path]=[];
+					}
+					targetData[path].push(aData);
+				}if(!targetData.length){
+					targetData=[];
+				}
+					targetData.push(aData);
+			}else{
+				targetData=[];
+				targetData.push(aData);
+			}
 		} 
 		
 		sap.ui.getCore().byId(appId).getModel(targetId+"_model").setData(targetData);
@@ -2214,6 +2227,32 @@ fnCreatePopUp :function(controlData){
 					case "sap.m.Select":elements[elementInc+1].setSelectedKey("");
 						break;
 					default: return true;
+					}
+				}
+			}
+		}else{
+
+			var rows = dataControl.getAggregation("rows");
+			for(var rowInc = 0; rowInc < rows.length; rowInc++){
+				var elements = rows[rowInc].getAggregation("cells");
+				for(var elementInc = 0; elementInc < elements.length; elementInc++){
+					var aElement = elements[elementInc].getAggregation("content")[0];
+					var elementType = aElement.getMetadata().getName();
+					if(elementType === "sap.ui.commons.Label"){
+						if(aElement.getProperty("required") === true){
+							var nextElement = elements[elementInc+1].getAggregation("content")[0];
+							var valueType = nextElement.getMetadata().getName();
+							var value = "";
+							switch(valueType){
+							case "sap.ui.commons.TextField":
+							case "sap.ui.commons.TextArea":
+							case "sap.ui.commons.DatePicker":nextElement.setValue("");
+								break;
+							case "sap.ui.commons.DropdownBox":nextElement.setSelectedKey("");
+								break;
+							default: return true;
+							}
+						}
 					}
 				}
 			}
@@ -2255,6 +2294,44 @@ fnCreatePopUp :function(controlData){
 						}else{
 							if(valueType !== "sap.m.Select"){
 								elements[elementInc+1].setValueState("None");							
+							}
+						}
+					}
+				}
+			}
+			if(errorMsg){
+				return "Please fill all required fields";
+			}
+		}else{
+			var rows = dataControl.getAggregation("rows");
+			for(var rowInc = 0; rowInc < rows.length; rowInc++){
+				var elements = rows[rowInc].getAggregation("cells");
+				for(var elementInc = 0; elementInc < elements.length; elementInc++){
+					var aElement = elements[elementInc].getAggregation("content")[0];
+					var elementType = aElement.getMetadata().getName();
+					if(elementType === "sap.ui.commons.Label"){
+						if(aElement.getProperty("required") === true){
+							var nextElement = elements[elementInc+1].getAggregation("content")[0];
+							var valueType = nextElement.getMetadata().getName();
+							var value = "";
+							switch(valueType){
+							case "sap.ui.commons.TextField":
+							case "sap.ui.commons.TextArea":
+							case "sap.ui.commons.DatePicker":value = nextElement.getValue();
+								break;
+							case "sap.ui.commons.DropdownBox":value = nextElement.getSelectedKey();
+								break;
+							default: return true;
+							}
+							if(value === ""){
+								if(valueType !== "sap.ui.commons.DropdownBox"){
+									nextElement.setValueState("Error");							
+								}
+								errorMsg = true;
+							}else{
+								if(valueType !== "sap.ui.commons.DropdownBox"){
+									nextElement.setValueState("None");							
+								}
 							}
 						}
 					}
