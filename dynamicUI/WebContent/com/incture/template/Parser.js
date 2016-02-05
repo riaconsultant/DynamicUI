@@ -778,7 +778,7 @@ fnCreatePopUp :function(controlData){
 		//console.log(oToolbar.getContent())
 		
 		if(bMobileEnabled){
-			//this.fnGetJson(controlData.serviceUrl, null, "get", true, null, sModelName);
+			this.fnGetJson(controlData.serviceUrl, null, "get", true, null, sModelName);
 			
 			
 			oLayout = this.fnCreateGrid(controlData.columns, controlData,true);
