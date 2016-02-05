@@ -50,6 +50,9 @@ com.incture.template.Parser = {
 	fnCreateScreensFromJson : function(oModel){
 		var structureData = oModel.getData();
 		var aScreens = structureData.app.screens;
+		if(!Array.isArray(aScreens)){
+			aScreens =[aScreens];
+		}
 		for (var incScreen = 0; incScreen < aScreens.length; incScreen++) {
 			var screenElement = aScreens[incScreen];
 			var oScreen = this.fnParseScreenType(screenElement);
@@ -217,24 +220,40 @@ fnCreatePopUp :function(controlData){
 //		if(!aScreens){
 //			aScreens=[];
 //		}
+		if(screenElement == undefined ){
+			return;
+			
+		}
+		if(Array.isArray(screenElement)){
+			if(screenElement.length == 0 )
+				return;
+			
+		}
 		var aControlsForScreen = screenElement.layouts[0].controls;
+		if(!Array.isArray(aControlsForScreen)){
+			aControlsForScreen =[aControlsForScreen];
+		}
 		for (var controlInc = 0; controlInc < aControlsForScreen.length; controlInc++) {
 			var control = aControlsForScreen[controlInc];
 			var modelName = control.id+"_model";
 			var oControl = this.fnParseControl(control,screenElement);
 			sap.ui.getCore().getModel('applicationModel').getProperty("/modelNames").push(modelName);
 			var oActionControl = this.fnParseControlForActions(control);
+			/**/
 			content.push(oControl);
 			var actionData=[];
-			actionData.push(new sap.m.ToolbarSpacer({}));
+			//actionData.push(new sap.m.ToolbarSpacer({}));
 			if(oActionControl != undefined){
+				if(!Array.isArray(oActionControl)){
+					oActionControl =[oActionControl];
+				}
 				for(var actionInc=0 ; actionInc< oActionControl.length; actionInc++){
 					actionData.push(oActionControl[actionInc]);
 					//oControl.addContent(oActionControl[actionInc]);
 				}
 			}
 			
-			actionData.push(new sap.m.ToolbarSpacer({width:"10%"}));
+			//actionData.push(new sap.m.ToolbarSpacer({width:"10%"}));
 			var actionBar = this.fnCreateToolBar(actionData);
 			content.push(actionBar);
 		}
@@ -311,6 +330,9 @@ fnCreatePopUp :function(controlData){
 		if(bTableForm){
 			 oFormElements = controlData;
 			 sFormId = parentControl.id+"_formId";
+		}
+		if(!Array.isArray(oFormElements)){
+			oFormElements = [oFormElements];
 		}
 		for (var elementInc = 0; elementInc < oFormElements.length; elementInc++) {
 			var element = oFormElements[elementInc];
@@ -395,7 +417,9 @@ fnCreatePopUp :function(controlData){
 			 sFormId = parentControl.id+"_formId";
 		}
 		var isLabelRequired = true;
-		
+		if(!Array.isArray(oFormElements)){
+			oFormElements = [oFormElements];
+		}
 		for (var elementInc = 0; elementInc < oFormElements.length; elementInc++) {
 			if(oRow == undefined || oRow.getCells().length % 6 == 0){
 				oRow = new sap.ui.commons.layout.MatrixLayoutRow({});
@@ -510,7 +534,9 @@ fnCreatePopUp :function(controlData){
 	fnCreateSimpleForm : function(controlData,parentControl) {
 		var oFormElements = controlData.elements;
 		var aFormContents = [];
-
+		if(!Array.isArray(oFormElements)){
+			oFormElements = [oFormElements];
+		}
 		for (var elementInc = 0; elementInc < oFormElements.length; elementInc++) {
 			var element = oFormElements[elementInc];
 			var oLabelForControl = this.fnCreateLabel(element,parentControl);
@@ -705,10 +731,12 @@ fnCreatePopUp :function(controlData){
 		var bMobileEnabled = sap.ui.getCore().getModel('applicationModel').getProperty('/mobile');
 		var aColumns =[];
 		var tableColumns = controlData.columns;
+		if(!Array.isArray(tableColumns)){
+			tableColumns = [tableColumns];
+		}
 		var oLayout  = undefined; 
 		
 		
-		//console.log(oDialog.getId())
 		var oToolbar = undefined;
 		oToolbar = this.fnCreateToolBar([]);
 		
@@ -782,7 +810,9 @@ fnCreatePopUp :function(controlData){
 			//get column header 
 			var bColumns =[];
 			var columns = controlData.columns;
-			
+			if(!Array.isArray(columns)){
+				columns = [columns];
+			}
 			for (var columnInc = 0; columnInc < columns.length; columnInc++) {
 				var arrayElement = columns[columnInc];
 				var oColumn = this.fnCreateColumnHeader(arrayElement,controlData)
@@ -883,7 +913,11 @@ fnCreatePopUp :function(controlData){
 		}
 		else{
 			//3rd parameter - tells the parser that we are creating a form for table
-			oLayout = this.fnCreateMatrixLayout(controlData.columns, controlData,true);
+			var oTableColumns = controlData.columns;
+			if(!Array.isArray(oTableColumns)){
+				oTableColumns = [oTableColumns];
+			}
+			oLayout = this.fnCreateMatrixLayout(oTableColumns, controlData,true);
 			
 			var selectionMode = controlData.multiSelect == 'true' ? sap.ui.table.SelectionMode.Multi : sap.ui.table.SelectionMode.Single;
 			var navigationMode = controlData.multiSelect == "true" ? sap.ui.table.NavigationMode.Paginator : sap.ui.table.NavigationMode.Scrollbar;
@@ -967,23 +1001,9 @@ fnCreatePopUp :function(controlData){
 			// since 1.23.0
 			});
 			
-			table.bindRows(sModelName+">"+controlData.bindingName);
+			table.bindRows(sModelName+">/"+controlData.bindingName);
 			
 		}
-		/*if(bMobileEnabled){
-			var oDialog = new sap.m.Dialog({
-				contentWidth:"100%",
-				contentHeight:"100%",
-				content:[oLayout]
-			});
-		}
-		else{
-			var oDialog = new sap.ui.commons.Dialog({
-				width:"100%",
-				height:"100%",
-				content:[oLayout]
-			});
-		}*/
 		
 		var oDialog = this.fnCreateTableFormDialog(controlData,oLayout);
 		
@@ -1698,8 +1718,12 @@ fnCreatePopUp :function(controlData){
 	fnParseControlForActions : function(control){
 		var oActionControl = [];
 		var controlActions = control.actions;
+		
 		if(controlActions  == undefined){
 			return;
+		}
+		if(!Array.isArray(controlActions)){
+			controlActions =[controlActions];
 		}
 		for(var actionInc=0; actionInc< controlActions.length; actionInc++){
 			var oAction = controlActions[actionInc];
@@ -1783,147 +1807,28 @@ fnCreatePopUp :function(controlData){
 		var oDialog = undefined;
 		var bMobileEnabled = sap.ui.getCore().getModel('applicationModel').getProperty('/mobile');
 		var that = this;
+		
+		var saveButtonData = {
+				label:'Save',
+				visible:"true",
+				editable:"true"
+		};
+		var cancelButtonData = {
+				label:'Cancel',
+				visible:"true",
+				editable:"true"
+		};
+		var oSaveButton = this.fnCreateButton(saveButtonData, {}, "fnSaveDialogDataToTable");
+		var oCancelButton = this.fnCreateButton(cancelButtonData, {}, "fnCloseDialog");
 		if(bMobileEnabled){
-			
-			var saveButton = new sap.m.Button({
-				busy : false, // boolean
-				busyIndicatorDelay : 1000, // int
-				visible : true, // boolean
-				text : "Save", // string
-				type : sap.m.ButtonType.Default, // sap.m.ButtonType
-				width : undefined, // sap.ui.core.CSSSize
-				enabled : true, // boolean
-				icon : undefined, // sap.ui.core.URI
-				iconFirst : true, // boolean
-				activeIcon : undefined, // sap.ui.core.URI
-				iconDensityAware : true, // boolean
-				textDirection : sap.ui.core.TextDirection.Inherit, // sap.ui.core.TextDirection, since 1.28.0
-				tooltip : undefined, // sap.ui.core.TooltipBase
-				customData : [], // sap.ui.core.CustomData
-				dependents : [], // sap.ui.core.Control, since 1.19
-				ariaDescribedBy : [], // sap.ui.core.Control
-				ariaLabelledBy : [], // sap.ui.core.Control
-				press : [ function(oEvent) {
-					var control = oEvent.getSource();
-					that.fnSaveDialogDataToTable(oEvent);
-				}, this ]
-			});
-			var cancelButton = new sap.m.Button({
-				busy : false, // boolean
-				busyIndicatorDelay : 1000, // int
-				visible : true, // boolean
-				text : "Cancel", // string
-				type : sap.m.ButtonType.Default, // sap.m.ButtonType
-				width : undefined, // sap.ui.core.CSSSize
-				enabled : true, // boolean
-				icon : undefined, // sap.ui.core.URI
-				iconFirst : true, // boolean
-				activeIcon : undefined, // sap.ui.core.URI
-				iconDensityAware : true, // boolean
-				textDirection : sap.ui.core.TextDirection.Inherit, // sap.ui.core.TextDirection, since 1.28.0
-				tooltip : undefined, // sap.ui.core.TooltipBase
-				customData : [], // sap.ui.core.CustomData
-				dependents : [], // sap.ui.core.Control, since 1.19
-				ariaDescribedBy : [], // sap.ui.core.Control
-				ariaLabelledBy : [], // sap.ui.core.Control
-				press : [ function(oEvent) {
-					var control = oEvent.getSource();
-					sap.ui.getCore().byId(controlData.id+"_dialog").close();
-				}, this ]
-			});
-			/*oDialog = new sap.m.Dialog({
-				id : controlData.id+"_dialog", // sap.ui.core.ID
-				visible : true, // boolean
-				icon : undefined, // sap.ui.core.URI
-				title : 'mobile', // string
-				showHeader : true, // boolean, since 1.15.1
-				type : sap.m.DialogType.Standard, // sap.m.DialogType
-				state : sap.ui.core.ValueState.None, // sap.ui.core.ValueState, since 1.11.2
-				stretchOnPhone : false, // boolean, since 1.11.2
-				stretch : false, // boolean, since 1.13.1
-				contentWidth : undefined, // sap.ui.core.CSSSize, since 1.12.1
-				contentHeight : undefined, // sap.ui.core.CSSSize, since 1.12.1
-				horizontalScrolling : true, // boolean, since 1.15.1
-				verticalScrolling : true, // boolean, since 1.15.1
-				resizable : false, // boolean, since 1.30
-				draggable : false, // boolean, since 1.30
-				tooltip : undefined, // sap.ui.core.TooltipBase
-				content : pLayout, // sap.ui.core.Control
-				subHeader : undefined, // sap.m.IBar, since 1.12.2
-				customHeader : undefined, // sap.m.IBar, since 1.15.1
-				beginButton : undefined, // sap.m.Button, since 1.15.1
-				endButton : undefined, // sap.m.Button, since 1.15.1
-				buttons : [saveButton,cancelButton], // sap.m.Button, since 1.21.1
-				leftButton : undefined, // sap.m.Button
-				rightButton : undefined, // sap.m.Button
-				initialFocus : undefined, // sap.ui.core.Control, since 1.15.0
-				ariaDescribedBy : [], // sap.ui.core.Control
-				beforeOpen : [ function(oEvent) {
-					var control = oEvent.getSource();
-				}, this ],
-				afterOpen : [ function(oEvent) {
-					var control = oEvent.getSource();
-				}, this ],
-				beforeClose : [ function(oEvent) {
-					var control = oEvent.getSource();
-				}, this ],
-				afterClose : [ function(oEvent) {
-					var control = oEvent.getSource();
-				}, this ]
-			});*/
-			
 			oDialog = new sap.m.Dialog({
 				id : controlData.id+"_dialog",
 				title : '',
 				content:pLayout,
-				buttons : [saveButton,cancelButton]
+				buttons : [oSaveButton,oCancelButton]
 			})
 		}
 		else{
-			
-			var oSaveButton = new sap.ui.commons.Button({
-				visible : true, // boolean
-				text : "Save", // string
-				enabled : true, // boolean
-				width : undefined, // sap.ui.core.CSSSize
-				helpId : "", // string
-				icon : "", // sap.ui.core.URI
-				iconHovered : "", // sap.ui.core.URI
-				iconSelected : "", // sap.ui.core.URI
-				iconFirst : true, // boolean
-				height : undefined, // sap.ui.core.CSSSize
-				styled : true, // boolean
-				lite : false, // boolean
-				style : sap.ui.commons.ButtonStyle.Default, // sap.ui.commons.ButtonStyle
-				tooltip : undefined, // sap.ui.core.TooltipBase
-				press : [ function(oEvent) {
-					var control = oEvent.getSource();
-					that.fnSaveDialogDataToTable(oEvent);
-				}, this ]
-			});
-			
-			//var oSaveButton = this.fnCreateButton({},{},"fnSaveDialogDataToTable");
-//			oSaveButton.setText('Save');
-			var oCancelButton = new sap.ui.commons.Button({
-				visible : true, // boolean
-				text : "Cancel", // string
-				enabled : true, // boolean
-				width : undefined, // sap.ui.core.CSSSize
-				helpId : "", // string
-				icon : "", // sap.ui.core.URI
-				iconHovered : "", // sap.ui.core.URI
-				iconSelected : "", // sap.ui.core.URI
-				iconFirst : true, // boolean
-				height : undefined, // sap.ui.core.CSSSize
-				styled : true, // boolean
-				lite : false, // boolean
-				style : sap.ui.commons.ButtonStyle.Default, // sap.ui.commons.ButtonStyle
-				tooltip : undefined, // sap.ui.core.TooltipBase
-				press : [ function(oEvent) {
-					var control = oEvent.getSource();
-					that.fnCloseDialog(oEvent);
-				}, this ]
-			});
 			
 			oDialog = new sap.ui.commons.Dialog({
 				id : controlData.id+"_dialog", // sap.ui.core.ID
@@ -1965,8 +1870,13 @@ fnCreatePopUp :function(controlData){
 		var oDialog = oEvent.getSource().getParent();
 		var oTable = oEvent.getSource().getParent().getParent();
 		var bMobileEnabled = sap.ui.getCore().getModel('applicationModel').getProperty('/mobile');
+		var path  ="/";
 		if(bMobileEnabled){
 			oTable = oEvent.getSource().getParent().getParent().getParent();
+			 path = oTable.getBindingInfo("items").path;
+		}
+		else{
+			path = oTable.getBindingInfo("rows").path;
 		}
 		var sTableId = oTable.getId();
 		var oTableFormModelName = sTableId+"_formId_model";
@@ -1974,13 +1884,13 @@ fnCreatePopUp :function(controlData){
 		var oApp = sap.ui.getCore().byId(sap.ui.getCore().getModel("applicationModel").getProperty('/applicationId'))
 		var oTableModel = oApp.getModel(oTableModelName);
 		var oTableFormModel = oApp.getModel(oTableFormModelName);
-		var path = oTable.getBindingInfo("items").path;
+		
 		if(oTableFormModel.getProperty('/action') == 'Add'){
 			/*oTableModel.push(oTableFormModel.getData())*/
 			var data = oTableModel.getProperty(path);
 			
 			if(!Array.isArray(data)){
-				oTableModel.setData([])
+				oTableModel.setProperty(path,[]);
 			}
 			var oData = oTableFormModel.getData();
 			delete oData.action;
@@ -2002,7 +1912,7 @@ fnCreatePopUp :function(controlData){
 	fnDeleteRow:function(oEvent){
 		
 		//this.fnConfirmMessageBox("confirm delete", "confirm", "fnConfirmDelete")
-		
+		var path = "/";
 		
 		var oTable = oEvent.getSource().getParent().getParent();
 		if(bMobileEnabled){
@@ -2016,31 +1926,33 @@ fnCreatePopUp :function(controlData){
 		var bMobileEnabled = sap.ui.getCore().getModel('applicationModel').getProperty('/mobile');
 		if(bMobileEnabled){
 			var oSelectedContexts = oTable.getSelectedContexts();
-			
-			
 			for(var inc = 0;inc < oSelectedContexts.length;inc++){
 				var context = oSelectedContexts[inc];
 				var path = context.sPath;
-				path = path.split("/")[1]
+				path = path.split("/");
+				path =path[path.length-1];
 				aSelectedIndices.push(parseInt(path));
 			}
 			if(aSelectedIndices.length == 0 ){
 				return;
 			}
+			path = oTable.getBindingInfo("items").path;
 		}
 		else{
-			 aSelectedIndices = oTable.getSelectedIndices();
+			
+			aSelectedIndices = oTable.getSelectedIndices();
 			console.log(aSelectedIndices);
 			if(aSelectedIndices.length == 0 ){
 				return;
 			}
+			path = oTable.getBindingInfo("rows").path;
 			
 		}
-		var dupData = jQuery.extend(true, [], oTableModel.getData());
+		var dupData = jQuery.extend(true, [], oTableModel.getProperty(path));
 		var arr = $.grep(dupData, function(n, i) {
 		    return $.inArray(i, aSelectedIndices) ==-1;
 		});
-		oTableModel.setData(arr);
+		oTableModel.setProperty(path,arr);
 		oTableModel.refresh();
 	},
 	fnUpdateRow:function(oEvent){
@@ -2185,7 +2097,7 @@ fnCreatePopUp :function(controlData){
 				targetData.push(aData);
 			}
 		}else if(controlType === "sap.ui.table.Table"){//replace data
-			var path = sap.ui.getCore().byId(targetId).getBindingInfo("rows").path;
+			path = sap.ui.getCore().byId(targetId).getBindingInfo("rows").path;
 			if(path){
 				if(targetData[path]){
 					if(!targetData[path].length){
