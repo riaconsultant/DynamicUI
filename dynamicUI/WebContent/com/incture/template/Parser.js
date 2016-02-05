@@ -776,11 +776,8 @@ fnCreatePopUp :function(controlData){
 			aColumns.push(oColumn);
 		}
 		//console.log(oToolbar.getContent())
-		
+		this.fnGetJson(controlData.serviceUrl, null, "get", true, null, sModelName);
 		if(bMobileEnabled){
-			this.fnGetJson(controlData.serviceUrl, null, "get", true, null, sModelName);
-			
-			
 			oLayout = this.fnCreateGrid(controlData.columns, controlData,true);
 			//get column header 
 			var bColumns =[];
@@ -1977,15 +1974,17 @@ fnCreatePopUp :function(controlData){
 		var oApp = sap.ui.getCore().byId(sap.ui.getCore().getModel("applicationModel").getProperty('/applicationId'))
 		var oTableModel = oApp.getModel(oTableModelName);
 		var oTableFormModel = oApp.getModel(oTableFormModelName);
+		var path = oTable.getBindingInfo("items").path;
 		if(oTableFormModel.getProperty('/action') == 'Add'){
 			/*oTableModel.push(oTableFormModel.getData())*/
-			var data = oTableModel.getData();
+			var data = oTableModel.getProperty(path);
+			
 			if(!Array.isArray(data)){
 				oTableModel.setData([])
 			}
 			var oData = oTableFormModel.getData();
 			delete oData.action;
-			oTableModel.getData().push(oData);
+			oTableModel.getProperty(path).push(oData);
 			oTableModel.refresh();
 		}else if(oTableFormModel.getProperty('/action') == 'Update'){
 			console.log()
