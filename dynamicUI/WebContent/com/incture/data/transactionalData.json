@@ -10,7 +10,7 @@
             "desc": "Application details",
             "version": "v1.0",
             "client": "Customer name",
-            "mobile": "true",
+            "mobile": "false",
             "favIcon": "Path",
             "homeIcon": "Path"
         },
@@ -277,6 +277,51 @@
 						"placeholder" : "DOJ",
 						"tooltip" : "date of joining",
 						"bindingName" : "HireDate",
+						"editable":"true",
+						"model" : "idForm",
+						"labelAlignment" : "left",
+						"mandatory" : "true",
+						"groupName":"radioGroup1",
+						"maxlength" : "5",
+						"cols":"20",
+						"rows":"2",
+						"displayDateFormat":"YYYY-MM-dd",
+                        "valueDateFormat":"YYYY-MM-dd",
+						"width" : "100%",
+						"visible" : "true",
+						"enable" : "true",
+						"defaultValue" : "",
+						"valueType" : "",
+						"className" : "",
+						"formatter" : "",
+						"itemBinding" : 
+						{
+							"itemLabel" : "desc",
+							"itemKey" : "key",
+							"bindingPath" : "/items",
+							"serviceUrl":"com/incture/data/location.json",
+							"model" : "locationModel"
+						},
+						"events" : 
+						[ 
+						{
+							"type" : "onclick/onchange",
+							"businessMethod" : "",
+							"serviceUrl" : "",
+							"screenRef" : "",
+							"dataObject" : "",
+							"refElement" : "",
+							"refDataPath" : ""
+
+						}
+						]
+					},
+					{
+						"type" : "datepicker",
+						"label" : "DO Joining",
+						"placeholder" : "DOJoin",
+						"tooltip" : "date of joining",
+						"bindingName" : "JoinDate",
 						"editable":"true",
 						"model" : "idForm",
 						"labelAlignment" : "left",
@@ -630,6 +675,52 @@
                         "placeholder": "Enter DOJ",
                         "tooltip": "Date of Joining",
                         "bindingName": "HireDate",
+                        "model": "idForm",
+                        "labelAlignment": "left",
+                        "editable": "true",
+                        "mandatory": "true",
+                        "maxlength": "5",
+                        "width": "100%",
+                        "visible": "true",
+                        "displayDateFormat":"YYYY-MM-dd",
+                        "valueDateFormat":"YYYY-MM-dd",
+                        "enable": "true",
+                        "defaultValue": "",
+                        "valueType": "",
+                        "className": "",
+                        "formatter": "",
+                        "itemBinding": 
+						{
+                            "itemLabel": "",
+                            "itemKey": "",
+                            "bindingPath": "",
+                            "model": ""
+                        },
+                        "events": 
+						[
+                        {
+                            "type": "onclick/onchange",
+                            "businessMethod": "",
+                            "serviceUrl": "",
+                            "screenRef": "",
+                            "dataObject": "",
+                            "refElement": "",
+                            "refDataPath": ""
+                        }
+                        ]
+                    },
+                    {
+                        "colLabel": "DOJoining",
+                        "colWidth": "50%",
+                        "colTemplateType": "Text",
+                        "colClassName": "",
+                        "colVisibile": "",
+                        "colMinScreenWidth": "",
+                        "type": "datepicker",
+                        "label": "DOJ",
+                        "placeholder": "Enter DOJ",
+                        "tooltip": "Date of Joining",
+                        "bindingName": "JoinDate",
                         "model": "idForm",
                         "labelAlignment": "left",
                         "editable": "true",

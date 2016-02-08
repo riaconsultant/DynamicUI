@@ -1015,10 +1015,12 @@ fnCreatePopUp :function(controlData){
 	fnCreateColumn:function(controlData,parentControl){
 		
 		var oColumn = undefined;
+		var bindingPath = parentControl.id+">"+controlData.bindingName;
 		var bMobileEnabled = sap.ui.getCore().getModel('applicationModel').getProperty('/mobile');
 		if(bMobileEnabled){
 			oColumn = this.fnParseControl(controlData,parentControl,true);
 		}
+		
 		else{
 			
 			var oColumnTemplate = this.fnParseControl(controlData,parentControl,true);
@@ -1029,11 +1031,11 @@ fnCreatePopUp :function(controlData){
 				hAlign : sap.ui.core.HorizontalAlign.Begin, // sap.ui.core.HorizontalAlign
 				sorted : false, // boolean
 				sortOrder : sap.ui.table.SortOrder.Ascending, // sap.ui.table.SortOrder
-				sortProperty : undefined, // string
+				sortProperty : controlData.bindingName, // string
 				filtered : false, // boolean
-				filterProperty : undefined, // string
+				filterProperty : controlData.bindingName, // string
 				filterValue : undefined, // string
-				filterOperator : undefined, // string
+				filterOperator : sap.ui.model.FilterOperator.Contains, // string
 				grouped : false, // boolean
 				visible : true, // boolean
 				filterType : undefined, // any, since 1.9.2
