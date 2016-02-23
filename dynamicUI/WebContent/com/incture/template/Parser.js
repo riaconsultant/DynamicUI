@@ -125,6 +125,7 @@ com.incture.template.Parser = {
 		
 		return page;
 	},
+	
 fnCreatePopUp :function(controlData){
 		
 		var content = this.getContentFromJson(controlData);
