@@ -1,1 +1,7 @@
+# Build Path
 /build/
+
+# IDE files
+.project
+.settings
+.classpath

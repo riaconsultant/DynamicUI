@@ -1,11 +1,11 @@
-															Dynamic UI Creation
+# Dynamic UI Creation
 
 
-What is it?
+# Intro
 -----------
 Dynamic UI creation is a Java script file which will create dynamic UI using jQuery and SAPUI5 library based on a JSON data.The JSON data will be provided to the parser file. The JSON data will provide the data in a specific strcuture which provides flexibility to create desired dynamic UI. This will result in creation of UI with minimum effort.
 
-Structure of Data
+# Structure of Data
 -----------------
 We have divided our application in following components. Each component may/may not be part of other components. 
 
@@ -23,5 +23,7 @@ Each components has its own structure. Please refer to the structure.xml to unde
 
 Licensing
 --------
-To be used by Incture employees only.
+This Content is under MIT License.
+
+Thanks, **Manoj**
 
